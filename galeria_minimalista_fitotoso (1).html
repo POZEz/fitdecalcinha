@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FITOTOSO</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            matte: {
+              950: '#09090b',
+              900: '#111113',
+              850: '#17171a',
+              800: '#202024',
+              700: '#2e2e34',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Scrollbar discreta */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #09090b;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #27272a;
+      border-radius: 9999px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #3f3f46;
+    }
+
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+    .skeleton-shimmer {
+      background: linear-gradient(90deg, #17171a 25%, #222228 50%, #17171a 75%);
+      background-size: 200% 100%;
+      animation: shimmer 1.8s infinite;
+    }
+
+    .modal-backdrop {
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+  </style>
+</head>
+<body class="bg-matte-950 text-neutral-200 font-sans antialiased min-h-screen selection:bg-neutral-800 selection:text-white flex flex-col justify-between">
+
+  <header class="fixed top-0 left-0 right-0 z-40 bg-matte-950/80 modal-backdrop border-b border-neutral-900">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      <a href="#" class="text-white font-extrabold tracking-widest text-lg transition-opacity hover:opacity-80">
+        <span class="tracking-[0.25em]">FITOTOSO</span>
+      </a>
+
+      <button 
+        id="btn-open-modal"
+        type="button" 
+        class="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs tracking-wider uppercase font-medium text-neutral-300 hover:text-white bg-matte-900 hover:bg-matte-850 border border-neutral-800 rounded-lg transition-colors"
+        aria-label="Abrir mapa">
+        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
+        </svg>
+        <span>Mapa</span>
+      </button>
+    </div>
+  </header>
+
+  <main class="flex-grow pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
+
+    <!-- Banner fit1 -->
+    <section id="banner-section" class="mt-4 mb-10">
+      <div class="relative w-full rounded-2xl overflow-hidden border border-neutral-800/80 bg-matte-900 group min-h-[300px] sm:min-h-[440px] md:min-h-[500px] flex items-center justify-center">
+        <div id="banner-skeleton" class="absolute inset-0 skeleton-shimmer z-10 flex items-center justify-center text-neutral-600 text-xs tracking-wider uppercase">
+          Carregando...
+        </div>
+
+        <img 
+          id="banner-image" 
+          src="" 
+          alt="Banner FIT 01" 
+          class="w-full h-[300px] sm:h-[440px] md:h-[500px] object-cover object-center opacity-0 transition-opacity duration-500 select-none group-hover:scale-[1.01] transition-transform duration-700 ease-out"
+        />
+
+        <div class="absolute inset-0 bg-gradient-to-t from-matte-950 via-matte-950/20 to-transparent pointer-events-none"></div>
+
+        <div class="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 z-20 pointer-events-none">
+          <span class="inline-block px-2.5 py-0.5 bg-matte-950/80 border border-neutral-800 rounded-full text-[10px] tracking-wider uppercase font-medium text-neutral-400 mb-1">
+            Destaque
+          </span>
+          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">
+            FIT 01
+          </h1>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contador simples -->
+    <div class="flex justify-end mb-4">
+      <span id="gallery-counter" class="text-xs tracking-wider text-neutral-500 font-mono"></span>
+    </div>
+
+    <!-- Grid de fotos (fit2 em diante) -->
+    <section>
+      <div 
+        id="gallery-grid" 
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-[280px]">
+      </div>
+
+      <!-- Mensagem quando não houver imagens -->
+      <div id="gallery-status" class="hidden text-center py-16 text-neutral-500 text-sm tracking-wide">
+        Nenhuma imagem da galeria localizada.
+      </div>
+    </section>
+  </main>
+
+  <!-- Modal do Mapa -->
+  <div 
+    id="map-modal" 
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200"
+    role="dialog" 
+    aria-modal="true" 
+    aria-labelledby="modal-title">
+
+    <div id="modal-overlay" class="absolute inset-0 bg-black/80 modal-backdrop"></div>
+
+    <div 
+      id="modal-content"
+      class="relative w-full max-w-lg bg-matte-900 border border-neutral-800 rounded-xl p-5 sm:p-6 shadow-2xl z-10">
+
+      <div class="flex items-center justify-between mb-3">
+        <div class="flex items-center gap-2">
+          <h3 id="modal-title" class="text-base font-semibold text-white">
+            Mapa
+          </h3>
+          <span class="text-xs text-neutral-500">· Em desenvolvimento</span>
+        </div>
+        <button 
+          id="btn-close-modal" 
+          type="button" 
+          class="text-neutral-400 hover:text-white p-1 rounded transition-colors"
+          aria-label="Fechar">
+          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Preview do mapa -->
+      <div class="relative w-full aspect-video rounded-lg overflow-hidden border border-neutral-800 bg-matte-850 flex items-center justify-center">
+        <img 
+          id="map-image"
+          src="mapa.png" 
+          alt="Mapa" 
+          class="w-full h-full object-cover"
+        />
+
+        <div id="map-fallback" class="hidden text-xs text-neutral-500">
+          mapa.png não encontrado
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox simples para ampliar foto -->
+  <div 
+    id="lightbox-modal" 
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 modal-backdrop opacity-0 pointer-events-none transition-opacity duration-200"
+    role="dialog"
+    aria-hidden="true">
+    
+    <button 
+      id="lightbox-close" 
+      class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 p-2 text-neutral-400 hover:text-white bg-neutral-900 border border-neutral-800 rounded-full transition-colors">
+      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+      </svg>
+    </button>
+
+    <div class="relative max-w-4xl max-h-[85vh] flex flex-col items-center">
+      <img 
+        id="lightbox-image" 
+        src="" 
+        alt="" 
+        class="max-w-full max-h-[80vh] object-contain rounded-lg border border-neutral-800"
+      />
+      <div id="lightbox-caption" class="mt-3 text-xs tracking-wider text-neutral-400 font-mono"></div>
+    </div>
+  </div>
+
+  <!-- Rodapé -->
+  <footer class="border-t border-neutral-900 py-6 px-4 text-center text-xs text-neutral-600">
+    <p>© <span id="current-year"></span> FITOTOSO</p>
+  </footer>
+
+  <script>
+    document.getElementById('current-year').textContent = new Date().getFullYear();
+
+    // Extensões suportadas
+    const EXTENSIONS = ['png', 'pmg', 'jpg', 'jpeg', 'webp'];
+    const MAX_CONSECUTIVE_MISSES = 2;
+    const MAX_SEARCH = 100;
+
+    const bannerImage = document.getElementById('banner-image');
+    const bannerSkeleton = document.getElementById('banner-skeleton');
+    const galleryGrid = document.getElementById('gallery-grid');
+    const galleryCounter = document.getElementById('gallery-counter');
+    const galleryStatus = document.getElementById('gallery-status');
+
+    // Testa se o arquivo da imagem existe e carrega
+    function checkImage(url) {
+      return new Promise((resolve) => {
+        const img = new Image();
+        img.onload = () => resolve({ ok: true, url });
+        img.onerror = () => resolve({ ok: false, url });
+        img.src = url;
+      });
+    }
+
+    // Acha a extensão correta pro número (fit1.png, fit1.jpg, etc.)
+    async function findFitFile(num) {
+      for (const ext of EXTENSIONS) {
+        const path = `fit${num}.${ext}`;
+        const res = await checkImage(path);
+        if (res.ok) return { num, url: path };
+      }
+      return null;
+    }
+
+    // Carrega o banner e depois os itens da grade
+    async function loadGallery() {
+      let totalFound = 0;
+      let misses = 0;
+
+      // Banner fit1
+      const banner = await findFitFile(1);
+      const bannerSection = document.getElementById('banner-section');
+
+      if (banner) {
+        bannerImage.src = banner.url;
+        bannerImage.onload = () => {
+          bannerSkeleton.classList.add('hidden');
+          bannerImage.classList.remove('opacity-0');
+        };
+      } else if (bannerSection) {
+        bannerSection.classList.add('hidden');
+      }
+
+      // Fotos seguintes (fit2 em diante)
+      for (let i = 2; i <= MAX_SEARCH; i++) {
+        const item = await findFitFile(i);
+        if (item) {
+          addCard(item.url, `FIT ${item.num < 10 ? '0' + item.num : item.num}`);
+          misses = 0;
+          totalFound++;
+          galleryCounter.textContent = `${totalFound} ${totalFound === 1 ? 'foto' : 'fotos'}`;
+        } else {
+          misses++;
+          if (misses >= MAX_CONSECUTIVE_MISSES) break;
+        }
+      }
+
+      // Mensagem simples se não encontrar nada
+      if (totalFound === 0) {
+        galleryStatus.classList.remove('hidden');
+        galleryCounter.textContent = '';
+      }
+    }
+
+    // Cria o card da foto na galeria
+    function addCard(url, label) {
+      const card = document.createElement('div');
+      card.className = "group relative w-full h-full rounded-xl overflow-hidden bg-matte-900 border border-neutral-800/80 cursor-pointer transition-all duration-200 hover:border-neutral-700";
+
+      card.innerHTML = `
+        <div class="absolute inset-0 skeleton-shimmer z-0"></div>
+        <img 
+          src="${url}" 
+          alt="${label}" 
+          class="w-full h-full object-cover object-center relative z-10 transition-transform duration-300 group-hover:scale-105 opacity-0"
+          loading="lazy"
+        />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20 flex items-end p-4">
+          <span class="text-xs font-medium text-white tracking-wider">${label}</span>
+        </div>
+      `;
+
+      const img = card.querySelector('img');
+      const skeleton = card.querySelector('.skeleton-shimmer');
+
+      img.onload = () => {
+        skeleton.classList.add('hidden');
+        img.classList.remove('opacity-0');
+      };
+
+      card.addEventListener('click', () => openLightbox(url, label));
+      galleryGrid.appendChild(card);
+    }
+
+    // Modal do mapa
+    const btnOpenModal = document.getElementById('btn-open-modal');
+    const btnCloseModal = document.getElementById('btn-close-modal');
+    const mapModal = document.getElementById('map-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const mapImage = document.getElementById('map-image');
+    const mapFallback = document.getElementById('map-fallback');
+
+    mapImage.onerror = () => {
+      mapImage.classList.add('hidden');
+      mapFallback.classList.remove('hidden');
+    };
+
+    function openModal() {
+      mapModal.classList.remove('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeModal() {
+      mapModal.classList.add('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = '';
+    }
+
+    btnOpenModal.addEventListener('click', openModal);
+    btnCloseModal.addEventListener('click', closeModal);
+    modalOverlay.addEventListener('click', closeModal);
+
+    // Lightbox
+    const lightboxModal = document.getElementById('lightbox-modal');
+    const lightboxImage = document.getElementById('lightbox-image');
+    const lightboxCaption = document.getElementById('lightbox-caption');
+    const lightboxClose = document.getElementById('lightbox-close');
+
+    function openLightbox(url, title) {
+      lightboxImage.src = url;
+      lightboxCaption.textContent = title;
+      lightboxModal.classList.remove('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      lightboxModal.classList.add('opacity-0', 'pointer-events-none');
+      document.body.style.overflow = '';
+    }
+
+    lightboxClose.addEventListener('click', closeLightbox);
+    lightboxModal.addEventListener('click', (e) => {
+      if (e.target === lightboxModal) closeLightbox();
+    });
+
+    // Tecla ESC para fechar janelas abertas
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        closeModal();
+        closeLightbox();
+      }
+    });
+
+    loadGallery();
+  </script>
+</body>
+</html>
