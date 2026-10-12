@@ -32,7 +32,6 @@
   </script>
 
   <style>
-    /* Scrollbar discreta */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
@@ -87,9 +86,8 @@
 
   <main class="flex-grow pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
 
-    <!-- Banner fit1 -->
-    <section id="banner-section" class="mt-4 mb-10">
-      <div class="relative w-full rounded-2xl overflow-hidden border border-neutral-800/80 bg-matte-900 group min-h-[300px] sm:min-h-[440px] md:min-h-[500px] flex items-center justify-center">
+    <section id="banner-section" class="mt-4 mb-8">
+      <div class="relative w-full rounded-2xl overflow-hidden border border-neutral-800/80 bg-matte-900 min-h-[220px] flex items-center justify-center">
         <div id="banner-skeleton" class="absolute inset-0 skeleton-shimmer z-10 flex items-center justify-center text-neutral-600 text-xs tracking-wider uppercase">
           Carregando...
         </div>
@@ -97,43 +95,29 @@
         <img 
           id="banner-image" 
           src="" 
-          alt="Banner FIT 01" 
-          class="w-full h-[300px] sm:h-[440px] md:h-[500px] object-cover object-center opacity-0 transition-opacity duration-500 select-none group-hover:scale-[1.01] transition-transform duration-700 ease-out"
+          alt="" 
+          class="w-full max-h-[70vh] object-contain mx-auto opacity-0 transition-opacity duration-300 select-none block"
         />
-
-        <div class="absolute inset-0 bg-gradient-to-t from-matte-950 via-matte-950/20 to-transparent pointer-events-none"></div>
-
-        <div class="absolute bottom-4 sm:bottom-6 left-4 sm:left-6 z-20 pointer-events-none">
-          <span class="inline-block px-2.5 py-0.5 bg-matte-950/80 border border-neutral-800 rounded-full text-[10px] tracking-wider uppercase font-medium text-neutral-400 mb-1">
-            Destaque
-          </span>
-          <h1 class="text-xl sm:text-2xl font-bold tracking-tight text-white">
-            FIT 01
-          </h1>
-        </div>
       </div>
     </section>
 
-    <!-- Contador simples -->
     <div class="flex justify-end mb-4">
       <span id="gallery-counter" class="text-xs tracking-wider text-neutral-500 font-mono"></span>
     </div>
 
-    <!-- Grid de fotos (fit2 em diante) -->
+    <!-- Galeria masonry: as fotos preservam o formato nativo sem corte fixo -->
     <section>
       <div 
         id="gallery-grid" 
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 auto-rows-[280px]">
+        class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
       </div>
 
-      <!-- Mensagem quando não houver imagens -->
       <div id="gallery-status" class="hidden text-center py-16 text-neutral-500 text-sm tracking-wide">
-        Nenhuma imagem da galeria localizada.
+        Nenhuma imagem encontrada.
       </div>
     </section>
   </main>
 
-  <!-- Modal do Mapa -->
   <div 
     id="map-modal" 
     class="fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200"
@@ -165,7 +149,6 @@
         </button>
       </div>
 
-      <!-- Preview do mapa -->
       <div class="relative w-full aspect-video rounded-lg overflow-hidden border border-neutral-800 bg-matte-850 flex items-center justify-center">
         <img 
           id="map-image"
@@ -181,7 +164,6 @@
     </div>
   </div>
 
-  <!-- Lightbox simples para ampliar foto -->
   <div 
     id="lightbox-modal" 
     class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 modal-backdrop opacity-0 pointer-events-none transition-opacity duration-200"
@@ -196,18 +178,16 @@
       </svg>
     </button>
 
-    <div class="relative max-w-4xl max-h-[85vh] flex flex-col items-center">
+    <div class="relative max-w-5xl max-h-[90vh] flex items-center justify-center">
       <img 
         id="lightbox-image" 
         src="" 
         alt="" 
-        class="max-w-full max-h-[80vh] object-contain rounded-lg border border-neutral-800"
+        class="max-w-full max-h-[85vh] object-contain rounded-lg border border-neutral-800"
       />
-      <div id="lightbox-caption" class="mt-3 text-xs tracking-wider text-neutral-400 font-mono"></div>
     </div>
   </div>
 
-  <!-- Rodapé -->
   <footer class="border-t border-neutral-900 py-6 px-4 text-center text-xs text-neutral-600">
     <p>© <span id="current-year"></span> FITOTOSO</p>
   </footer>
@@ -215,7 +195,6 @@
   <script>
     document.getElementById('current-year').textContent = new Date().getFullYear();
 
-    // Extensões suportadas
     const EXTENSIONS = ['png', 'pmg', 'jpg', 'jpeg', 'webp'];
     const MAX_CONSECUTIVE_MISSES = 2;
     const MAX_SEARCH = 100;
@@ -226,7 +205,6 @@
     const galleryCounter = document.getElementById('gallery-counter');
     const galleryStatus = document.getElementById('gallery-status');
 
-    // Testa se o arquivo da imagem existe e carrega
     function checkImage(url) {
       return new Promise((resolve) => {
         const img = new Image();
@@ -236,7 +214,6 @@
       });
     }
 
-    // Acha a extensão correta pro número (fit1.png, fit1.jpg, etc.)
     async function findFitFile(num) {
       for (const ext of EXTENSIONS) {
         const path = `fit${num}.${ext}`;
@@ -246,7 +223,6 @@
       return null;
     }
 
-    // Carrega o banner e depois os itens da grade
     async function loadGallery() {
       let totalFound = 0;
       let misses = 0;
@@ -265,11 +241,11 @@
         bannerSection.classList.add('hidden');
       }
 
-      // Fotos seguintes (fit2 em diante)
+      // Galeria (fit2 em diante)
       for (let i = 2; i <= MAX_SEARCH; i++) {
         const item = await findFitFile(i);
         if (item) {
-          addCard(item.url, `FIT ${item.num < 10 ? '0' + item.num : item.num}`);
+          addCard(item.url);
           misses = 0;
           totalFound++;
           galleryCounter.textContent = `${totalFound} ${totalFound === 1 ? 'foto' : 'fotos'}`;
@@ -279,44 +255,42 @@
         }
       }
 
-      // Mensagem simples se não encontrar nada
       if (totalFound === 0) {
         galleryStatus.classList.remove('hidden');
         galleryCounter.textContent = '';
       }
     }
 
-    // Cria o card da foto na galeria
-    function addCard(url, label) {
+    function addCard(url) {
       const card = document.createElement('div');
-      card.className = "group relative w-full h-full rounded-xl overflow-hidden bg-matte-900 border border-neutral-800/80 cursor-pointer transition-all duration-200 hover:border-neutral-700";
+      card.className = "break-inside-avoid mb-4 rounded-xl overflow-hidden bg-matte-900 border border-neutral-800/80 cursor-pointer hover:border-neutral-700 transition-colors";
 
-      card.innerHTML = `
-        <div class="absolute inset-0 skeleton-shimmer z-0"></div>
-        <img 
-          src="${url}" 
-          alt="${label}" 
-          class="w-full h-full object-cover object-center relative z-10 transition-transform duration-300 group-hover:scale-105 opacity-0"
-          loading="lazy"
-        />
-        <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-200 z-20 flex items-end p-4">
-          <span class="text-xs font-medium text-white tracking-wider">${label}</span>
-        </div>
-      `;
+      const wrapper = document.createElement('div');
+      wrapper.className = "relative w-full";
 
-      const img = card.querySelector('img');
-      const skeleton = card.querySelector('.skeleton-shimmer');
+      const skeleton = document.createElement('div');
+      skeleton.className = "skeleton-shimmer h-48 w-full";
+
+      const img = document.createElement('img');
+      img.src = url;
+      img.alt = "";
+      img.loading = "lazy";
+      img.className = "w-full h-auto block opacity-0 transition-opacity duration-300";
 
       img.onload = () => {
-        skeleton.classList.add('hidden');
+        skeleton.remove();
         img.classList.remove('opacity-0');
       };
 
-      card.addEventListener('click', () => openLightbox(url, label));
+      wrapper.appendChild(skeleton);
+      wrapper.appendChild(img);
+      card.appendChild(wrapper);
+
+      card.addEventListener('click', () => openLightbox(url));
       galleryGrid.appendChild(card);
     }
 
-    // Modal do mapa
+    // Modal mapa
     const btnOpenModal = document.getElementById('btn-open-modal');
     const btnCloseModal = document.getElementById('btn-close-modal');
     const mapModal = document.getElementById('map-modal');
@@ -346,12 +320,10 @@
     // Lightbox
     const lightboxModal = document.getElementById('lightbox-modal');
     const lightboxImage = document.getElementById('lightbox-image');
-    const lightboxCaption = document.getElementById('lightbox-caption');
     const lightboxClose = document.getElementById('lightbox-close');
 
-    function openLightbox(url, title) {
+    function openLightbox(url) {
       lightboxImage.src = url;
-      lightboxCaption.textContent = title;
       lightboxModal.classList.remove('opacity-0', 'pointer-events-none');
       document.body.style.overflow = 'hidden';
     }
@@ -366,7 +338,6 @@
       if (e.target === lightboxModal) closeLightbox();
     });
 
-    // Tecla ESC para fechar janelas abertas
     document.addEventListener('keydown', (e) => {
       if (e.key === 'Escape') {
         closeModal();
