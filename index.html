@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Minecraft Map Viewer</title>
+    <title>AtlasFT MAP</title>
     
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,27 +41,34 @@
             position: absolute; top: 0; left: 0; right: 0; height: 60px; 
             background: var(--bg-panel); backdrop-filter: blur(16px); 
             border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 2000; 
-            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; gap: 10px;
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 0 20px; gap: 12px; box-sizing: border-box;
         }
-        .brand { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0; }
+        .brand {
+            font-size: 16px; font-weight: 600; display: flex; align-items: center;
+            gap: 8px; white-space: nowrap; flex-shrink: 0; margin-right: 4px;
+        }
         .brand .material-symbols-outlined { color: var(--primary); }
 
-        /* === SELETOR DE DIMENSÕES (Profundidade sutil e sóbria) === */
+        /* === SELETOR DE DIMENSÕES (Dentro de Configurações) === */
         .dimension-tabs {
             display: flex;
+            width: 100%;
+            box-sizing: border-box;
             background: rgba(0, 0, 0, 0.35);
             border-radius: 8px;
             padding: 3px;
             gap: 3px;
             border: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
-            flex-shrink: 0;
         }
         .dim-btn {
+            flex: 1;
+            justify-content: center;
             background: transparent;
             border: 1px solid transparent;
             color: var(--text-muted);
-            padding: 5px 12px;
+            padding: 7px 6px;
             border-radius: 6px;
             font-size: 12px;
             font-weight: 500;
@@ -70,10 +77,10 @@
             transition: background 0.15s ease, color 0.15s ease;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             white-space: nowrap;
         }
-        .dim-btn .material-symbols-outlined { font-size: 16px; }
+        .dim-btn .material-symbols-outlined { font-size: 15px; }
         .dim-btn:hover:not(.active) {
             color: var(--text-main);
             background: rgba(255, 255, 255, 0.04);
@@ -86,10 +93,10 @@
             box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
         }
 
-        /* === BUSCA (Profundidade simples e limpa) === */
+        /* === BUSCA === */
         .search-wrapper { 
-            display: flex; align-items: center; flex: 1; max-width: 340px;
-            margin: 0 6px; position: relative; min-width: 0;
+            display: flex; align-items: center; flex: 1; max-width: 400px;
+            margin: 0 auto; position: relative; min-width: 0;
             background: rgba(0, 0, 0, 0.35);
             border: 1px solid rgba(255, 255, 255, 0.06);
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
@@ -172,7 +179,7 @@
         .filter-option.selected img { opacity: 1; }
 
         /* === CONTROLES DO TOPO === */
-        .top-controls { display: flex; gap: 4px; flex-shrink: 0; }
+        .top-controls { display: flex; gap: 4px; flex-shrink: 0; align-items: center; }
         .icon-btn { 
             position: relative; background: transparent; border: none; color: var(--text-muted); 
             cursor: pointer; width: 38px; height: 38px; border-radius: 8px; 
@@ -180,6 +187,20 @@
         }
         .icon-btn:hover { background: var(--bg-hover); color: var(--primary); }
         .icon-btn:active { transform: scale(0.94); }
+
+        .btc-square-icon {
+            width: 20px;
+            height: 20px;
+            display: block;
+            object-fit: contain;
+            border-radius: 3px;
+            opacity: 0.85;
+            transition: opacity 0.15s ease;
+        }
+        .icon-btn:hover .btc-square-icon,
+        .tributes-title-group .btc-square-icon {
+            opacity: 1;
+        }
 
         /* Tooltip Customizado */
         .has-tooltip::after {
@@ -204,7 +225,8 @@
         .close-modal-btn:hover { color: white; }
         
         #ui-panel { 
-            position: absolute; top: 70px; right: 15px; z-index: 2000; width: 280px; max-width: calc(100vw - 30px); 
+            position: absolute; top: 70px; right: 15px; z-index: 2000; width: 290px; max-width: calc(100vw - 30px); 
+            max-height: calc(100vh - 85px); overflow-y: auto;
             background: var(--bg-panel); backdrop-filter: blur(16px); border-radius: 12px; padding: 20px; 
             border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
             transform: translateX(calc(100% + 50px)); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; 
@@ -213,7 +235,6 @@
         .panel-section { margin-bottom: 20px; }
         .panel-section h3 { margin: 0 0 12px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666; }
         
-        /* Barra de Desenho Limpa (Sem bolinha verde bugada) */
         .draw-toolbar { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 10px; }
         .draw-btn {
             position: relative; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
@@ -241,7 +262,7 @@
         .btn-gallery { width: 100%; padding: 8px; border: none; border-radius: 6px; background: var(--primary); color: var(--primary-text); font-weight: 600; font-family: 'Inter'; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }
         .btn-gallery:hover { background: #e4e4e7; }
         
-        /* === GALERIA (LOCAIS E HOMENAGENS) === */
+        /* === GALERIA LIGHTBOX === */
         #gallery-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); z-index: 4500; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease; }
         #gallery-overlay.active { display: flex; opacity: 1; }
         .gallery-container { width: 100%; height: 100%; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
@@ -258,7 +279,7 @@
         .gallery-close-top { background: rgba(255,255,255,0.08); border: none; color: white; width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; }
         .gallery-close-top:hover { background: rgba(255,255,255,0.16); }
 
-        /* === GALERIA DE HOMENAGENS (Design Sóbrio e Estável) === */
+        /* === SEÇÃO FITFC === */
         #tributes-overlay {
             position: fixed; inset: 0; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(12px);
             z-index: 4000; display: none; flex-direction: column; opacity: 0; transition: opacity 0.2s ease;
@@ -270,12 +291,29 @@
             background: var(--bg-panel);
         }
         .tributes-title-group { display: flex; align-items: center; gap: 10px; }
-        .tributes-title-group .material-symbols-outlined { font-size: 22px; color: var(--primary); }
         .tributes-title-group h2 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-main); }
 
         .tributes-grid-wrapper {
             flex: 1; overflow-y: auto; padding: 24px;
             max-width: 1200px; width: 100%; margin: 0 auto; box-sizing: border-box;
+        }
+        .fitfc-banner {
+            width: 100%;
+            max-height: 280px;
+            border-radius: 8px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: #121214;
+            cursor: pointer;
+            display: none;
+        }
+        .fitfc-banner img {
+            width: 100%;
+            height: 100%;
+            max-height: 280px;
+            object-fit: cover;
+            display: block;
         }
         .tributes-grid {
             display: grid;
@@ -296,7 +334,7 @@
             background: #161618;
         }
         .tribute-card-img-wrap {
-            width: 100%; height: 170px; background: #09090b; overflow: hidden;
+            width: 100%; height: 180px; background: #09090b; overflow: hidden;
         }
         .tribute-card-img-wrap img {
             width: 100%; height: 100%; object-fit: cover; display: block;
@@ -318,8 +356,14 @@
         .leaflet-container.crosshair-cursor-enabled, .leaflet-container.crosshair-cursor-enabled .leaflet-interactive { cursor: crosshair !important; }
         .scalable-icon { transform: scale(var(--icon-scale)); transform-origin: bottom center; transition: transform 0.1s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
         
-        .map-label-container { background: transparent; border: none; box-shadow: none; pointer-events: none; }
-        .map-label-text { color: white; text-shadow: 0px 2px 4px rgba(0,0,0,0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; font-weight: 600; font-family: 'Inter'; text-align: center; white-space: nowrap; transform: scale(var(--label-scale)); transform-origin: top center; transition: transform 0.1s; }
+        .map-label-container { background: transparent; border: none; box-shadow: none; }
+        .map-label-text {
+            color: white;
+            text-shadow: 0px 2px 4px rgba(0,0,0,0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+            font-weight: 600; font-family: 'Inter'; text-align: center; white-space: nowrap;
+            transform: scale(var(--label-scale)); transform-origin: top center; transition: transform 0.1s;
+            cursor: pointer; pointer-events: auto;
+        }
         .measure-tooltip { background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; font-family: monospace; font-size: 12px; font-weight: bold; padding: 6px 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
         .invisible-icon { width: 0 !important; height: 0 !important; opacity: 0; margin: 0 !important; }
 
@@ -332,25 +376,8 @@
         /* === RESPONSIVIDADE & MOBILE === */
         @media (max-width: 768px) {
             #top-bar { padding: 0 10px; gap: 6px; }
-            .brand .text-brand { display: none; }
-            .brand { margin-right: 0; gap: 0; }
+            .brand { font-size: 14px; gap: 6px; margin-right: 2px; }
             
-            /* Seletor de dimensões centralizado na parte inferior em telas mobile */
-            .dimension-tabs {
-                position: fixed;
-                bottom: 16px;
-                left: 50%;
-                transform: translateX(-50%);
-                z-index: 2500;
-                background: rgba(15, 15, 15, 0.92);
-                backdrop-filter: blur(16px);
-                padding: 4px;
-                border-radius: 8px;
-                border: 1px solid rgba(255,255,255,0.1);
-                box-shadow: 0 6px 20px rgba(0,0,0,0.6), inset 0 1px 3px rgba(0,0,0,0.6);
-            }
-            .dim-btn { padding: 6px 12px; font-size: 12px; }
-
             .search-wrapper { margin: 0 4px; min-width: 0; padding: 0 8px; }
             .search-icon { margin-right: 6px; font-size: 18px; }
             #search-input { font-size: 13px; }
@@ -371,6 +398,10 @@
             .tributes-grid-wrapper { padding: 16px; }
             .has-tooltip::after { display: none !important; }
         }
+
+        @media (max-width: 460px) {
+            .brand .text-brand { font-size: 13px; }
+        }
     </style>
 </head>
 <body>
@@ -380,23 +411,7 @@
     <header id="top-bar">
         <div class="brand">
             <span class="material-symbols-outlined">map</span>
-            <span class="text-brand">Mapa</span>
-        </div>
-
-        <!-- SELETOR DE DIMENSÕES -->
-        <div class="dimension-tabs" id="dimension-tabs">
-            <button class="dim-btn active" data-dim="overworld">
-                <span class="material-symbols-outlined">public</span>
-                <span>Overworld</span>
-            </button>
-            <button class="dim-btn" data-dim="nether">
-                <span class="material-symbols-outlined">local_fire_department</span>
-                <span>Nether</span>
-            </button>
-            <button class="dim-btn" data-dim="end">
-                <span class="material-symbols-outlined">dark_mode</span>
-                <span>The End</span>
-            </button>
+            <span class="text-brand">AtlasFT MAP</span>
         </div>
         
         <!-- BARRA DE BUSCA -->
@@ -423,8 +438,8 @@
         </div>
 
         <div class="top-controls">
-            <button class="icon-btn has-tooltip" id="btn-tributes" data-tooltip="Galeria de Homenagens">
-                <span class="material-symbols-outlined">collections_bookmark</span>
+            <button class="icon-btn has-tooltip" id="btn-tributes" data-tooltip="FITFC">
+                <img class="btc-square-icon" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' rx='3' fill='%23f7931a'/%3E%3Cpath d='M16.1 10.4c.2-1.3-.8-2-2.2-2.5l.4-1.8-1.1-.3-.4 1.7c-.3-.1-.6-.1-.9-.2l.4-1.7-1.1-.3-.4 1.8c-.2-.1-.5-.1-.7-.2l-1.5-.4-.3 1.2s.8.2.8.2c.4.1.5.4.5.6l-.5 2.1c.1 0 .2.1.3.1-.1 0-.2 0-.3-.1l-.8 3.1c-.1.2-.3.4-.7.3 0 0-.8-.2-.8-.2l-.5 1.3 1.4.4c.3.1.5.1.8.2l-.5 1.8 1.1.3.4-1.8c.3.1.6.2.9.2l-.4 1.8 1.1.3.5-1.8c1.9.4 3.3.2 3.9-1.5.5-1.4 0-2.2-1-2.7.7-.1 1.3-.6 1.4-1.5zm-2.5 3.6c-.4 1.4-2.7.6-3.4.5l.6-2.4c.7.2 3.2.5 2.8 1.9zm.4-3.6c-.3 1.3-2.2.6-2.9.5l.5-2.2c.7.2 2.7.5 2.4 1.7z' fill='%23ffffff'/%3E%3C/svg%3E" alt="FITFC">
             </button>
             <button class="icon-btn has-tooltip" id="btn-reset-view" data-tooltip="Visão Global">
                 <span class="material-symbols-outlined">visibility</span>
@@ -449,18 +464,21 @@
         </div>
     </div>
 
-    <!-- Galeria de Homenagens -->
+    <!-- Galeria FITFC -->
     <div id="tributes-overlay">
         <div class="tributes-header">
             <div class="tributes-title-group">
-                <span class="material-symbols-outlined">collections_bookmark</span>
-                <h2>Galeria de Homenagens</h2>
+                <img class="btc-square-icon" src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect x='2' y='2' width='20' height='20' rx='3' fill='%23f7931a'/%3E%3Cpath d='M16.1 10.4c.2-1.3-.8-2-2.2-2.5l.4-1.8-1.1-.3-.4 1.7c-.3-.1-.6-.1-.9-.2l.4-1.7-1.1-.3-.4 1.8c-.2-.1-.5-.1-.7-.2l-1.5-.4-.3 1.2s.8.2.8.2c.4.1.5.4.5.6l-.5 2.1c.1 0 .2.1.3.1-.1 0-.2 0-.3-.1l-.8 3.1c-.1.2-.3.4-.7.3 0 0-.8-.2-.8-.2l-.5 1.3 1.4.4c.3.1.5.1.8.2l-.5 1.8 1.1.3.4-1.8c.3.1.6.2.9.2l-.4 1.8 1.1.3.5-1.8c1.9.4 3.3.2 3.9-1.5.5-1.4 0-2.2-1-2.7.7-.1 1.3-.6 1.4-1.5zm-2.5 3.6c-.4 1.4-2.7.6-3.4.5l.6-2.4c.7.2 3.2.5 2.8 1.9zm.4-3.6c-.3 1.3-2.2.6-2.9.5l.5-2.2c.7.2 2.7.5 2.4 1.7z' fill='%23ffffff'/%3E%3C/svg%3E" alt="FITFC">
+                <h2>FITFC</h2>
             </div>
             <button class="gallery-close-top" id="btn-close-tributes" title="Fechar">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
         <div class="tributes-grid-wrapper">
+            <div class="fitfc-banner" id="fitfc-banner">
+                <img id="fitfc-banner-img" src="" alt="FITFC Banner">
+            </div>
             <div class="tributes-grid" id="tributes-grid"></div>
         </div>
     </div>
@@ -498,6 +516,24 @@
 
     <!-- Painel Lateral de Configurações -->
     <div id="ui-panel">
+        <div class="panel-section">
+            <h3>Dimensão</h3>
+            <div class="dimension-tabs" id="dimension-tabs">
+                <button class="dim-btn active" data-dim="overworld">
+                    <span class="material-symbols-outlined">public</span>
+                    <span>Overworld</span>
+                </button>
+                <button class="dim-btn" data-dim="nether">
+                    <span class="material-symbols-outlined">local_fire_department</span>
+                    <span>Nether</span>
+                </button>
+                <button class="dim-btn" data-dim="end">
+                    <span class="material-symbols-outlined">dark_mode</span>
+                    <span>The End</span>
+                </button>
+            </div>
+        </div>
+
         <div class="panel-section">
             <h3>Edição Livre</h3>
             <div class="draw-toolbar">
@@ -539,35 +575,200 @@
     
     <script>
         // =========================================================================
-        // 1. CARREGAMENTO DE DADOS (./data/markers.json, ./data/prints.json)
+        // 1. UTILITÁRIOS DE DESCOBERTA DINÂMICA DE ARQUIVOS (GitHub Pages & Local)
         // =========================================================================
-        let externalMarkersData = null;
+        let categorizedMarkersCache = null;
         let externalPrintsData = null;
-        let externalTributesData = null;
 
-        async function fetchInitialDataFiles() {
-            if (externalMarkersData === null) {
-                try {
-                    const resM = await fetch('./data/markers.json');
-                    if (resM.ok) externalMarkersData = await resM.json();
-                } catch (e) {}
-                if (!externalMarkersData) externalMarkersData = [];
+        const WORD_ACCENTS_MAP = {
+            'turisticos': 'Turísticos',
+            'turistico': 'Turístico',
+            'publicos': 'Públicos',
+            'publico': 'Público',
+            'historicos': 'Históricos',
+            'historico': 'Histórico',
+            'comercio': 'Comércio',
+            'comercios': 'Comércios',
+            'construcoes': 'Construções',
+            'construcao': 'Construção',
+            'estacoes': 'Estações',
+            'estacao': 'Estação',
+            'regioes': 'Regiões',
+            'regiao': 'Região',
+            'mansoes': 'Mansões',
+            'mansao': 'Mansão',
+            'portoes': 'Portões',
+            'portao': 'Portão',
+            'alema': 'Alemã',
+            'imperio': 'Império'
+        };
+
+        function formatCategoryName(rawName) {
+            const clean = rawName.replace(/\.json$/i, '');
+            return clean
+                .split(/[_-]+/)
+                .filter(Boolean)
+                .map(word => {
+                    const lower = word.toLowerCase();
+                    if (WORD_ACCENTS_MAP[lower]) return WORD_ACCENTS_MAP[lower];
+                    return lower.charAt(0).toUpperCase() + lower.slice(1);
+                })
+                .join(' ');
+        }
+
+        function detectGitHubRepo() {
+            const host = window.location.hostname;
+            const pathParts = window.location.pathname.split('/').filter(Boolean);
+            if (host.endsWith('.github.io')) {
+                const owner = host.split('.')[0];
+                const repo = pathParts.length > 0 ? pathParts[0] : `${owner}.github.io`;
+                return { owner, repo };
+            }
+            return null;
+        }
+
+        async function listDirectoryFiles(dirPath, extensions = []) {
+            const cleanDir = dirPath.replace(/^\.?\//, '').replace(/\/$/, '');
+            const foundFiles = new Set();
+
+            const matchesExtension = (name) => {
+                if (!extensions || extensions.length === 0) return true;
+                const lower = name.toLowerCase();
+                return extensions.some(ext => lower.endsWith(ext.toLowerCase()));
+            };
+
+            // 1. Tenta listagem de diretório HTML (servidores locais / autoindex)
+            try {
+                const res = await fetch(`./${cleanDir}/`);
+                if (res.ok) {
+                    const contentType = res.headers.get('content-type') || '';
+                    if (contentType.includes('text/html')) {
+                        const html = await res.text();
+                        const doc = new DOMParser().parseFromString(html, 'text/html');
+                        doc.querySelectorAll('a[href]').forEach(a => {
+                            const href = decodeURIComponent(a.getAttribute('href') || '');
+                            if (!href || href.startsWith('?') || href.startsWith('#') || href === '../' || href.endsWith('/')) return;
+                            const fileName = href.split('/').filter(Boolean).pop();
+                            if (fileName && matchesExtension(fileName)) {
+                                foundFiles.add(fileName);
+                            }
+                        });
+                    }
+                }
+            } catch (e) {}
+
+            // 2. Tenta API pública do GitHub se estiver no GitHub Pages
+            if (foundFiles.size === 0) {
+                const gh = detectGitHubRepo();
+                if (gh) {
+                    try {
+                        const apiRes = await fetch(`https://api.github.com/repos/${gh.owner}/${gh.repo}/contents/${cleanDir}`);
+                        if (apiRes.ok) {
+                            const items = await apiRes.json();
+                            if (Array.isArray(items)) {
+                                items.forEach(item => {
+                                    if (item.type === 'file' && item.name && matchesExtension(item.name)) {
+                                        foundFiles.add(item.name);
+                                    }
+                                });
+                            }
+                        }
+                    } catch (e) {}
+                }
             }
 
-            if (externalPrintsData === null) {
+            // 3. Tenta manifesto opcional index.json dentro da pasta
+            if (foundFiles.size === 0) {
                 try {
-                    const resP = await fetch('./data/prints.json');
-                    if (resP.ok) externalPrintsData = await resP.json();
+                    const idxRes = await fetch(`./${cleanDir}/index.json`);
+                    if (idxRes.ok) {
+                        const list = await idxRes.json();
+                        if (Array.isArray(list)) {
+                            list.forEach(name => {
+                                if (typeof name === 'string' && matchesExtension(name)) {
+                                    foundFiles.add(name);
+                                }
+                            });
+                        }
+                    }
                 } catch (e) {}
-                if (!externalPrintsData) externalPrintsData = {};
             }
 
-            if (externalTributesData === null) {
-                try {
-                    const resH = await fetch('./data/homenagens.json');
-                    if (resH.ok) externalTributesData = await resH.json();
-                } catch (e) {}
+            return Array.from(foundFiles);
+        }
+
+        function checkImageExists(url) {
+            return new Promise((resolve) => {
+                const img = new Image();
+                img.onload = () => resolve(true);
+                img.onerror = () => resolve(false);
+                img.src = url;
+            });
+        }
+
+        async function loadDynamicMarkerCategories() {
+            if (categorizedMarkersCache !== null) return categorizedMarkersCache;
+
+            const excludedFiles = new Set(['prints.json', 'homenagens.json', 'index.json', 'config.json']);
+            let jsonFiles = await listDirectoryFiles('data', ['.json']);
+            jsonFiles = jsonFiles.filter(f => !excludedFiles.has(f.toLowerCase()));
+
+            // Fallback de sondagem caso o servidor não liste diretórios nem seja *.github.io
+            if (jsonFiles.length === 0) {
+                const candidates = [
+                    'cidades.json', 'monumentos.json', 'pontos_turisticos.json',
+                    'markers.json', 'locais.json', 'bases.json', 'farms.json',
+                    'vilas.json', 'portais.json', 'eventos.json', 'comercio.json',
+                    'construcoes.json'
+                ];
+                const checks = await Promise.all(candidates.map(async (file) => {
+                    try {
+                        const r = await fetch(`./data/${file}`);
+                        if (r.ok) {
+                            const data = await r.json();
+                            return { file, data };
+                        }
+                    } catch (e) {}
+                    return null;
+                }));
+                const result = [];
+                checks.filter(Boolean).forEach(({ file, data }) => {
+                    const categoryKey = file.replace(/\.json$/i, '');
+                    const categoryName = formatCategoryName(categoryKey);
+                    result.push({ categoryKey, categoryName, data });
+                });
+                categorizedMarkersCache = result;
+                return categorizedMarkersCache;
             }
+
+            const loadedCategories = await Promise.all(jsonFiles.map(async (file) => {
+                try {
+                    const res = await fetch(`./data/${file}`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        const categoryKey = file.replace(/\.json$/i, '');
+                        const categoryName = formatCategoryName(categoryKey);
+                        return { categoryKey, categoryName, data };
+                    }
+                } catch (e) {}
+                return null;
+            }));
+
+            categorizedMarkersCache = loadedCategories.filter(Boolean);
+            return categorizedMarkersCache;
+        }
+
+        async function loadOptionalPrintsJson() {
+            if (externalPrintsData !== null) return externalPrintsData;
+            try {
+                const resP = await fetch('./data/prints.json');
+                if (resP.ok) {
+                    externalPrintsData = await resP.json();
+                    return externalPrintsData;
+                }
+            } catch (e) {}
+            externalPrintsData = {};
+            return externalPrintsData;
         }
 
         // =========================================================================
@@ -680,7 +881,7 @@
         });
 
         // =========================================================================
-        // 5. BUSCA E FILTROS
+        // 5. BUSCA E FILTROS (Categorias por arquivo JSON, Ícone/Galeria por "type")
         // =========================================================================
         const searchInput = document.getElementById('search-input');
         const btnClearSearch = document.getElementById('btn-clear-search');
@@ -688,13 +889,14 @@
         let currentFilterValue = 'all';
         let searchTimeout;
 
-        function formatReadableName(type) {
-            return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        function getMarkerType(m) {
+            return m.type || m.tipo || '';
         }
 
         function resolveMarkerIconUrl(m) {
             if (m.image) return `./${currentDimension}/${m.image}`;
-            if (m.type && m.type !== 'padrão') return `./static/icons/${m.type}.png`;
+            const mType = getMarkerType(m);
+            if (mType && mType !== 'padrão') return `./static/icons/${mType}.png`;
             return 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
         }
 
@@ -731,8 +933,8 @@
 
             const filtered = loadedMarkers.filter(m => {
                 const textMatch = (m.name || '').toLowerCase().includes(term);
-                const typeMatch = currentFilterValue === 'all' || (m.type || 'padrão') === currentFilterValue;
-                return textMatch && typeMatch;
+                const categoryMatch = currentFilterValue === 'all' || m.category === currentFilterValue;
+                return textMatch && categoryMatch;
             });
 
             if (filtered.length === 0) {
@@ -799,11 +1001,11 @@
         });
 
         // =========================================================================
-        // 6. SISTEMA DE GALERIA DE LOCAIS (./static/galeria/<pasta>/)
+        // 6. SISTEMA DE GALERIA DOS MARCADORES (static/galeria/<type>/<imagem>.png)
         // =========================================================================
         let currentGallery = [];
         let galleryIndex = 0;
-        let galleryFolder = '';
+        let galleryBaseFolder = '';
         const galleryOverlay = document.getElementById('gallery-overlay');
         const mainImg = document.getElementById('gallery-main-image');
         const galleryCaption = document.getElementById('gallery-caption');
@@ -812,10 +1014,10 @@
         const btnPrev = document.getElementById('btn-gallery-prev');
         const btnNext = document.getElementById('btn-gallery-next');
 
-        function resolveGalleryItemUrl(item, folder) {
+        function resolveGalleryItemUrl(item, baseFolder) {
             const raw = typeof item === 'object' ? (item.image || item.file || item.src || '') : item;
             if (raw.startsWith('http') || raw.startsWith('./') || raw.startsWith('/')) return raw;
-            return `./static/galeria/${folder}/${raw}`;
+            return `./${baseFolder}/${raw}`;
         }
 
         function resolveGalleryItemCaption(item) {
@@ -823,17 +1025,56 @@
             return '';
         }
 
-        window.openGallery = async function(title, folder) {
-            playSound('open');
-            await fetchInitialDataFiles();
+        async function resolveMarkerTypeImages(typeName) {
+            const folderPath = `static/galeria/${typeName}`;
 
-            let images = [];
-            if (externalPrintsData && externalPrintsData[folder]) {
-                images = externalPrintsData[folder];
-            } else if (Array.isArray(externalPrintsData)) {
-                images = externalPrintsData.filter(p => p.gallery === folder || p.folder === folder);
+            // 1. Tenta listagem dinâmica da pasta static/galeria/<type>/ (HTML autoindex / GitHub API / index.json)
+            let files = await listDirectoryFiles(folderPath, ['.png']);
+            if (files.length > 0) {
+                return files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(f => `./${folderPath}/${f}`);
             }
 
+            // 2. Verifica se existe mapeamento em data/prints.json para esse type
+            const printsData = await loadOptionalPrintsJson();
+            if (printsData && Array.isArray(printsData[typeName]) && printsData[typeName].length > 0) {
+                return printsData[typeName].map(item => {
+                    const file = typeof item === 'object' ? (item.image || item.file || item.src) : item;
+                    if (file.startsWith('./') || file.startsWith('http')) return item;
+                    const normalized = file.endsWith('.png') || file.includes('.') ? file : `${file}.png`;
+                    return typeof item === 'object' ? { ...item, image: `./${folderPath}/${normalized}` } : `./${folderPath}/${normalized}`;
+                });
+            }
+
+            // 3. Fallback de sondagem por nomes comuns de PNG dentro de static/galeria/<type>/
+            const candidates = [
+                `${typeName}.png`,
+                ...Array.from({ length: 15 }, (_, i) => `${i + 1}.png`),
+                ...Array.from({ length: 15 }, (_, i) => `${typeName}${i + 1}.png`),
+                ...Array.from({ length: 10 }, (_, i) => `${typeName}_${i + 1}.png`),
+                ...Array.from({ length: 10 }, (_, i) => `0${i + 1}.png`),
+                ...Array.from({ length: 10 }, (_, i) => `print${i + 1}.png`),
+                ...Array.from({ length: 10 }, (_, i) => `foto${i + 1}.png`)
+            ];
+            const uniqueCandidates = [...new Set(candidates)];
+            const existing = [];
+            await Promise.all(uniqueCandidates.map(async (file) => {
+                const url = `./${folderPath}/${file}`;
+                if (await checkImageExists(url)) {
+                    existing.push(url);
+                }
+            }));
+
+            return existing.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        }
+
+        window.openGallery = async function(title, typeName) {
+            playSound('open');
+            if (!typeName) {
+                alert('Nenhum tipo de galeria associado a este marcador.');
+                return;
+            }
+
+            const images = await resolveMarkerTypeImages(typeName);
             if (!images || images.length === 0) {
                 alert('Nenhuma imagem foi encontrada na galeria deste local.');
                 return;
@@ -841,7 +1082,7 @@
 
             currentGallery = images;
             galleryIndex = 0;
-            galleryFolder = folder;
+            galleryBaseFolder = `static/galeria/${typeName}`;
             document.getElementById('gallery-title-text').innerText = title;
             updateGalleryUI();
             galleryOverlay.classList.add('active');
@@ -853,17 +1094,12 @@
             mainImg.style.opacity = 0;
 
             const currentItem = currentGallery[galleryIndex];
-            const primaryUrl = resolveGalleryItemUrl(currentItem, galleryFolder);
+            const primaryUrl = resolveGalleryItemUrl(currentItem, galleryBaseFolder);
             const captionText = resolveGalleryItemCaption(currentItem);
             galleryCaption.innerText = captionText;
             galleryCaption.style.display = captionText ? 'block' : 'none';
 
             setTimeout(() => {
-                mainImg.onerror = () => {
-                    if (mainImg.src.includes('/static/galeria/')) {
-                        mainImg.src = mainImg.src.replace('/static/galeria/', '/galeria/');
-                    }
-                };
                 mainImg.src = primaryUrl;
                 mainImg.onload = () => { mainImg.style.opacity = 1; };
             }, 120);
@@ -871,8 +1107,8 @@
             if (total > 1) {
                 btnPrev.style.visibility = 'visible';
                 btnNext.style.visibility = 'visible';
-                prevPreview.src = resolveGalleryItemUrl(currentGallery[(galleryIndex - 1 + total) % total], galleryFolder);
-                nextPreview.src = resolveGalleryItemUrl(currentGallery[(galleryIndex + 1) % total], galleryFolder);
+                prevPreview.src = resolveGalleryItemUrl(currentGallery[(galleryIndex - 1 + total) % total], galleryBaseFolder);
+                nextPreview.src = resolveGalleryItemUrl(currentGallery[(galleryIndex + 1) % total], galleryBaseFolder);
             } else {
                 btnPrev.style.visibility = 'hidden';
                 btnNext.style.visibility = 'hidden';
@@ -886,44 +1122,66 @@
         galleryOverlay.addEventListener('click', (e) => { if(e.target === galleryOverlay) closeGallery(); });
 
         // =========================================================================
-        // 7. GALERIA DE HOMENAGENS (Sem exemplos falsos e sem animações exageradas)
+        // 7. SEÇÃO FITFC (Pasta fitfc/ com fitfc/fit1.png como banner)
         // =========================================================================
         const tributesOverlay = document.getElementById('tributes-overlay');
         const tributesGrid = document.getElementById('tributes-grid');
+        const fitfcBanner = document.getElementById('fitfc-banner');
+        const fitfcBannerImg = document.getElementById('fitfc-banner-img');
 
-        function getTributesList() {
-            if (Array.isArray(externalTributesData) && externalTributesData.length > 0) {
-                return externalTributesData;
+        async function getFitfcImagesList() {
+            const folderPath = 'fitfc';
+            let files = await listDirectoryFiles(folderPath, ['.png', '.jpg', '.jpeg', '.webp']);
+
+            if (files.length === 0) {
+                const candidates = [
+                    ...Array.from({ length: 30 }, (_, i) => `fit${i + 1}.png`),
+                    ...Array.from({ length: 20 }, (_, i) => `${i + 1}.png`)
+                ];
+                const checks = await Promise.all(candidates.map(async (f) => {
+                    const exists = await checkImageExists(`./${folderPath}/${f}`);
+                    return exists ? f : null;
+                }));
+                files = checks.filter(Boolean);
             }
-            if (externalPrintsData && Array.isArray(externalPrintsData.homenagens) && externalPrintsData.homenagens.length > 0) {
-                return externalPrintsData.homenagens.map((item, idx) => {
-                    if (typeof item === 'string') {
-                        return {
-                            name: `Homenagem #${idx + 1}`,
-                            description: '',
-                            image: `./static/galeria/homenagens/${item}`
-                        };
-                    }
-                    return {
-                        name: item.name || item.title || `Homenagem #${idx + 1}`,
-                        description: item.description || item.caption || '',
-                        image: item.image && (item.image.startsWith('./') || item.image.startsWith('http'))
-                            ? item.image
-                            : `./static/galeria/homenagens/${item.image || item.file}`
-                    };
-                });
-            }
-            return [];
+
+            files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+
+            return files.map((file) => ({
+                file,
+                name: file.replace(/\.[^.]+$/, '').toUpperCase(),
+                image: `./${folderPath}/${file}`
+            }));
         }
 
         async function openTributesModal() {
             playSound('open');
-            await fetchInitialDataFiles();
-            const list = getTributesList();
+            const list = await getFitfcImagesList();
             tributesGrid.innerHTML = '';
 
+            const bannerUrl = './fitfc/fit1.png';
+            const hasBanner = list.some(item => item.file.toLowerCase() === 'fit1.png') || await checkImageExists(bannerUrl);
+
+            if (hasBanner) {
+                fitfcBannerImg.src = bannerUrl;
+                fitfcBanner.style.display = 'block';
+                fitfcBanner.onclick = () => {
+                    playSound('click');
+                    const galleryItems = list.length > 0 ? list : [{ name: 'FIT1', image: bannerUrl }];
+                    const bannerIdx = Math.max(0, galleryItems.findIndex(i => i.image.toLowerCase().endsWith('fit1.png')));
+                    currentGallery = galleryItems;
+                    galleryIndex = bannerIdx;
+                    galleryBaseFolder = 'fitfc';
+                    document.getElementById('gallery-title-text').innerText = 'FITFC';
+                    updateGalleryUI();
+                    galleryOverlay.classList.add('active');
+                };
+            } else {
+                fitfcBanner.style.display = 'none';
+            }
+
             if (list.length === 0) {
-                tributesGrid.innerHTML = `<div class="tributes-empty">Nenhuma homenagem cadastrada até o momento.</div>`;
+                tributesGrid.innerHTML = `<div class="tributes-empty">Nenhuma imagem encontrada na pasta fitfc.</div>`;
             } else {
                 list.forEach((item, index) => {
                     const card = document.createElement('div');
@@ -934,15 +1192,14 @@
                         </div>
                         <div class="tribute-card-body">
                             <div class="tribute-card-title">${item.name}</div>
-                            ${item.description ? `<div class="tribute-card-desc">${item.description}</div>` : ''}
                         </div>
                     `;
                     card.onclick = () => {
                         playSound('click');
                         currentGallery = list;
                         galleryIndex = index;
-                        galleryFolder = 'homenagens';
-                        document.getElementById('gallery-title-text').innerText = item.name || 'Galeria de Homenagens';
+                        galleryBaseFolder = 'fitfc';
+                        document.getElementById('gallery-title-text').innerText = 'FITFC';
                         updateGalleryUI();
                         galleryOverlay.classList.add('active');
                     };
@@ -975,6 +1232,7 @@
         let currentMinZoom = -6;
         let currentMaxZoom = 2;
         let loadedMarkers = [];
+        let activeCategoriesList = [];
         let pinsLayer = L.layerGroup();
         let labelsLayer = L.layerGroup();
         let drawingsByDim = {
@@ -1060,7 +1318,7 @@
                 btn.classList.toggle('active', btn.getAttribute('data-dim') === dim);
             });
 
-            await fetchInitialDataFiles();
+            const dynamicCategories = await loadDynamicMarkerCategories();
             const { props, customMarkers, players } = await loadDimensionData(dim);
 
             currentMinZoom = props.minZoom !== undefined ? props.minZoom : -6;
@@ -1123,55 +1381,99 @@
             map.setView(mcToLatLng(0, 0), props.defaultZoom !== undefined ? props.defaultZoom : 0);
 
             const combined = [];
+            const categoriesMap = new Map();
 
-            if (Array.isArray(externalMarkersData)) {
-                externalMarkersData.forEach(m => {
-                    const mDim = (m.dimension || 'overworld').toLowerCase();
-                    if (mDim === dim) combined.push(m);
+            dynamicCategories.forEach(({ categoryKey, categoryName, data }) => {
+                let list = [];
+                if (Array.isArray(data)) {
+                    list = data.filter(m => (m.dimension || 'overworld').toLowerCase() === dim);
+                } else if (data && Array.isArray(data[dim])) {
+                    list = data[dim];
+                }
+
+                list.forEach(m => {
+                    if (m && m.x !== undefined && m.z !== undefined) {
+                        const markerObj = {
+                            ...m,
+                            type: getMarkerType(m),
+                            category: categoryKey,
+                            categoryName: categoryName
+                        };
+                        combined.push(markerObj);
+                        if (!categoriesMap.has(categoryKey)) {
+                            categoriesMap.set(categoryKey, {
+                                key: categoryKey,
+                                name: categoryName,
+                                sampleMarker: markerObj
+                            });
+                        }
+                    }
                 });
-            } else if (externalMarkersData && Array.isArray(externalMarkersData[dim])) {
-                externalMarkersData[dim].forEach(m => combined.push(m));
-            }
+            });
 
             if (Array.isArray(props.markers)) {
                 props.markers.forEach(m => {
                     if (m && m.x !== undefined && m.z !== undefined) {
-                        combined.push({
-                            name: m.text || 'Local',
+                        const catKey = m.category || 'marcadores';
+                        const catName = formatCategoryName(catKey);
+                        const markerObj = {
+                            name: m.text || m.name || 'Local',
                             x: m.x,
                             z: m.z,
-                            type: m.type || 'marcador',
-                            image: m.image
-                        });
+                            type: getMarkerType(m),
+                            image: m.image,
+                            category: catKey,
+                            categoryName: catName
+                        };
+                        combined.push(markerObj);
+                        if (!categoriesMap.has(catKey)) {
+                            categoriesMap.set(catKey, { key: catKey, name: catName, sampleMarker: markerObj });
+                        }
                     }
                 });
             }
 
             customMarkers.forEach(m => {
                 if (m && m.x !== undefined && m.z !== undefined) {
-                    combined.push({
+                    const catKey = m.category || 'locais';
+                    const catName = formatCategoryName(catKey);
+                    const markerObj = {
                         name: m.text || m.name || 'Ponto de Interesse',
                         x: m.x,
                         z: m.z,
-                        type: m.type || 'custom',
+                        type: getMarkerType(m),
                         image: m.image,
-                        gallery: m.gallery
-                    });
+                        category: catKey,
+                        categoryName: catName
+                    };
+                    combined.push(markerObj);
+                    if (!categoriesMap.has(catKey)) {
+                        categoriesMap.set(catKey, { key: catKey, name: catName, sampleMarker: markerObj });
+                    }
                 }
             });
 
             players.forEach(p => {
                 if (p && p.x !== undefined && p.z !== undefined) {
-                    combined.push({
+                    const catKey = 'jogadores';
+                    const catName = 'Jogadores';
+                    const markerObj = {
                         name: p.name || 'Jogador',
                         x: p.x,
                         z: p.z,
-                        type: 'jogador'
-                    });
+                        type: getMarkerType(p) || 'jogador',
+                        category: catKey,
+                        categoryName: catName
+                    };
+                    combined.push(markerObj);
+                    if (!categoriesMap.has(catKey)) {
+                        categoriesMap.set(catKey, { key: catKey, name: catName, sampleMarker: markerObj });
+                    }
                 }
             });
 
             loadedMarkers = combined;
+            activeCategoriesList = Array.from(categoriesMap.values());
             buildFilterMenu();
             applyFilter('all', 'Todos');
         }
@@ -1380,7 +1682,7 @@
         }
 
         // =========================================================================
-        // 10. RENDERIZAÇÃO DE ÍCONES E FILTROS DINÂMICOS
+        // 10. RENDERIZAÇÃO DE ÍCONES E FILTROS DINÂMICOS POR CATEGORIA
         // =========================================================================
         function getCustomIcon(m) {
             const src = resolveMarkerIconUrl(m);
@@ -1406,20 +1708,16 @@
             allOption.onclick = () => { applyFilter('all', 'Todos'); playSound('click'); };
             filterMenu.appendChild(allOption);
 
-            const types = [...new Set(loadedMarkers.map(m => m.type || 'padrão'))];
-            types.forEach(type => {
-                const readableName = formatReadableName(type);
-                const sampleMarker = loadedMarkers.find(m => (m.type || 'padrão') === type) || { type };
-                const iconSrc = resolveMarkerIconUrl(sampleMarker);
-                
+            activeCategoriesList.forEach(cat => {
+                const iconSrc = resolveMarkerIconUrl(cat.sampleMarker || {});
                 const div = document.createElement('div');
                 div.className = 'filter-option';
-                div.setAttribute('data-value', type);
+                div.setAttribute('data-value', cat.key);
                 div.innerHTML = `
-                    <span class="filter-name">${readableName}</span>
-                    <img src="${iconSrc}" alt="${readableName}" onerror="this.src='https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png'">
+                    <span class="filter-name">${cat.name}</span>
+                    <img src="${iconSrc}" alt="${cat.name}" onerror="this.src='https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png'">
                 `;
-                div.onclick = () => { applyFilter(type, readableName); playSound('click'); };
+                div.onclick = () => { applyFilter(cat.key, cat.name); playSound('click'); };
                 filterMenu.appendChild(div);
             });
         }
@@ -1429,13 +1727,16 @@
             labelsLayer.clearLayers();
             
             loadedMarkers.forEach(m => {
-                const mType = m.type || 'padrão';
-                if (filterValue !== 'all' && mType !== filterValue) return;
+                if (filterValue !== 'all' && m.category !== filterValue) return;
 
                 const latlng = mcToLatLng(m.x, m.z);
+                const mType = getMarkerType(m);
+                const safeName = (m.name || 'Local').replace(/'/g, "\\'");
+                const safeType = mType.replace(/'/g, "\\'");
+
                 let popupHtml = `<div style="font-family:'Inter'; text-align:center;"><b>${m.name}</b><br><span style="color:#666; font-size:12px;">X: ${m.x}, Z: ${m.z}</span>`;
-                if (m.gallery) {
-                    popupHtml += `<br><button class="btn-gallery" onclick="window.openGallery('${m.name.replace(/'/g, "\\'")}', '${m.gallery}')"><span class="material-symbols-outlined" style="font-size:16px;">photo_library</span> Ver Galeria</button>`;
+                if (mType) {
+                    popupHtml += `<br><button class="btn-gallery" onclick="window.openGallery('${safeName}', '${safeType}')"><span class="material-symbols-outlined" style="font-size:16px;">photo_library</span> Ver Galeria</button>`;
                 }
                 popupHtml += `</div>`;
 
@@ -1447,7 +1748,7 @@
                     iconSize: [200, 20],
                     iconAnchor: [100, -5]
                 });
-                L.marker(latlng, { icon: labelIcon, interactive: false }).addTo(labelsLayer);
+                L.marker(latlng, { icon: labelIcon, interactive: true }).bindPopup(popupHtml).addTo(labelsLayer);
             });
             
             if (!document.getElementById('toggle-markers').checked) map.removeLayer(pinsLayer);
