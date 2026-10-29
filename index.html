@@ -341,11 +341,13 @@
         
         .fitfc-banner img {
             width: 100%;
-            /* Aumentamos de 380px para até 560px para acomodar imagens verticais */
-            height: clamp(280px, 52vh, 560px);
+            /* Mantém uma proporção cinemática 21:9 / widescreen que dá só um zoom suave */
+            aspect-ratio: 16 / 7;
+            height: auto;
+            max-height: 540px;
             object-fit: cover;
-            /* 50% horizontal, 25% a 35% vertical foca exatamente na transição do topo com o meio */
-            object-position: 50% 30%; 
+            /* 50% horizontal e 35% a 40% vertical mantém o meio da cena perfeitamente enquadrado */
+            object-position: 50% 50%;
             display: block;
         }
         .masonry-grid {
