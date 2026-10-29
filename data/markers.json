@@ -18,49 +18,57 @@
   {
     "id": 3,
     "name": "Sayuri",
-    "x": -232,
-    "z": 800,
+    "x": -180,
+    "z": 700,
     "type": "fish_cake",
     "gallery": "sayuri"
   },
   {
     "id": 4,
     "name": "Alteia",
-    "x": -352,
-    "z": -104,
+    "x": -465,
+    "z": -82,
     "type": "trident",
     "gallery": "alteia"
   },
   {
     "id": 5,
     "name": "Montain Lake",
-    "x": -304,
-    "z": -1536,
+    "x": -260,
+    "z": -1493,
     "type": "snowflake",
     "gallery": "montainlake"
   },
   {
     "id": 6,
     "name": "Dragon city",
-    "x": -3744,
-    "z": -328,
+    "x": -3680,
+    "z": -329,
     "type": "dragon",
     "gallery": "dragoncity"
   },
   {
     "id": 7,
     "name": "Cherry field",
-    "x": 4568,
-    "z": -1408,
+    "x": 4536,
+    "z": -1406,
     "type": "cherry_blossom",
     "gallery": "cherryfield"
   },
   {
     "id": 8,
     "name": "Camelot",
-    "x": -1736,
-    "z": -24,
+    "x": -1718,
+    "z": -54,
     "type": "eggplant",
     "gallery": "camelot"
+  },
+  {
+    "id": 9,
+    "name": "Boreal",
+    "x": 440,
+    "z": 303,
+    "type": "eggplant",
+    "gallery": "Boreal"
   }
 ]
