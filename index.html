@@ -330,24 +330,23 @@
         }
         .fitfc-banner {
             width: 100%;
-            height: clamp(260px, 48vh, 520px);
             border-radius: 10px;
             overflow: hidden;
             margin-bottom: 16px;
             border: 1px solid rgba(255, 255, 255, 0.08);
-            background: #121214;
+            background: rgba(18, 18, 20, 0.6);
             cursor: pointer;
             display: none;
-            position: relative;
         }
         
         .fitfc-banner img {
             width: 100%;
-            height: 100%;
-            object-fit: contain; /* Mostra a altura vertical completa da imagem sem distorcer */
-            object-position: center;
+            /* Aumentamos de 380px para até 560px para acomodar imagens verticais */
+            height: clamp(280px, 52vh, 560px);
+            object-fit: cover;
+            /* 50% horizontal, 25% a 35% vertical foca exatamente na transição do topo com o meio */
+            object-position: 50% 30%; 
             display: block;
-            backdrop-filter: blur(20px);
         }
         .masonry-grid {
             column-count: 4;
