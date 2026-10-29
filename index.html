@@ -1,351 +1,1463 @@
 <!DOCTYPE html>
-<html lang="pt-BR" class="dark scroll-smooth">
+<html lang="pt-BR">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>FITOTOSO</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  
-  <script>
-    tailwind.config = {
-      darkMode: 'class',
-      theme: {
-        extend: {
-          fontFamily: {
-            sans: ['Inter', 'sans-serif'],
-          },
-          colors: {
-            matte: {
-              950: '#09090b',
-              900: '#111113',
-              850: '#17171a',
-              800: '#202024',
-              700: '#2e2e34',
-            }
-          }
-        }
-      }
-    }
-  </script>
-
-  <style>
-    ::-webkit-scrollbar {
-      width: 6px;
-      height: 6px;
-    }
-    ::-webkit-scrollbar-track {
-      background: #09090b;
-    }
-    ::-webkit-scrollbar-thumb {
-      background: #27272a;
-      border-radius: 9999px;
-    }
-    ::-webkit-scrollbar-thumb:hover {
-      background: #3f3f46;
-    }
-
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
-    }
-    .skeleton-shimmer {
-      background: linear-gradient(90deg, #17171a 25%, #222228 50%, #17171a 75%);
-      background-size: 200% 100%;
-      animation: shimmer 1.8s infinite;
-    }
-
-    .modal-backdrop {
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-    }
-  </style>
-</head>
-<body class="bg-matte-950 text-neutral-200 font-sans antialiased min-h-screen selection:bg-neutral-800 selection:text-white flex flex-col justify-between">
-
-  <header class="fixed top-0 left-0 right-0 z-40 bg-matte-950/80 modal-backdrop border-b border-neutral-900">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-      <a href="#" class="text-white font-extrabold tracking-widest text-lg transition-opacity hover:opacity-80">
-        <span class="tracking-[0.25em]">FITOTOSO</span>
-      </a>
-
-      <button 
-        id="btn-open-modal"
-        type="button" 
-        class="inline-flex items-center gap-2 px-3.5 py-1.5 text-xs tracking-wider uppercase font-medium text-neutral-300 hover:text-white bg-matte-900 hover:bg-matte-850 border border-neutral-800 rounded-lg transition-colors"
-        aria-label="Abrir mapa">
-        <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
-        </svg>
-        <span>Mapa</span>
-      </button>
-    </div>
-  </header>
-
-  <main class="flex-grow pt-20 pb-16 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto w-full">
-
-    <section id="banner-section" class="mt-4 mb-8">
-      <div class="relative w-full rounded-2xl overflow-hidden border border-neutral-800/80 bg-matte-900 min-h-[220px] flex items-center justify-center">
-        <div id="banner-skeleton" class="absolute inset-0 skeleton-shimmer z-10 flex items-center justify-center text-neutral-600 text-xs tracking-wider uppercase">
-          Carregando...
-        </div>
-
-        <img 
-          id="banner-image" 
-          src="" 
-          alt="" 
-          class="w-full max-h-[70vh] object-contain mx-auto opacity-0 transition-opacity duration-300 select-none block"
-        />
-      </div>
-    </section>
-
-    <div class="flex justify-end mb-4">
-      <span id="gallery-counter" class="text-xs tracking-wider text-neutral-500 font-mono"></span>
-    </div>
-
-    <!-- Galeria masonry: as fotos preservam o formato nativo sem corte fixo -->
-    <section>
-      <div 
-        id="gallery-grid" 
-        class="columns-1 sm:columns-2 md:columns-3 lg:columns-4 gap-4">
-      </div>
-
-      <div id="gallery-status" class="hidden text-center py-16 text-neutral-500 text-sm tracking-wide">
-        Nenhuma imagem encontrada.
-      </div>
-    </section>
-  </main>
-
-  <div 
-    id="map-modal" 
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-opacity duration-200"
-    role="dialog" 
-    aria-modal="true" 
-    aria-labelledby="modal-title">
-
-    <div id="modal-overlay" class="absolute inset-0 bg-black/80 modal-backdrop"></div>
-
-    <div 
-      id="modal-content"
-      class="relative w-full max-w-lg bg-matte-900 border border-neutral-800 rounded-xl p-5 sm:p-6 shadow-2xl z-10">
-
-      <div class="flex items-center justify-between mb-3">
-        <div class="flex items-center gap-2">
-          <h3 id="modal-title" class="text-base font-semibold text-white">
-            Mapa
-          </h3>
-          <span class="text-xs text-neutral-500">· Em desenvolvimento</span>
-        </div>
-        <button 
-          id="btn-close-modal" 
-          type="button" 
-          class="text-neutral-400 hover:text-white p-1 rounded transition-colors"
-          aria-label="Fechar">
-          <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
-        </button>
-      </div>
-
-      <div class="relative w-full aspect-video rounded-lg overflow-hidden border border-neutral-800 bg-matte-850 flex items-center justify-center">
-        <img 
-          id="map-image"
-          src="mapa.png" 
-          alt="Mapa" 
-          class="w-full h-full object-cover"
-        />
-
-        <div id="map-fallback" class="hidden text-xs text-neutral-500">
-          mapa.png não encontrado
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div 
-    id="lightbox-modal" 
-    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 modal-backdrop opacity-0 pointer-events-none transition-opacity duration-200"
-    role="dialog"
-    aria-hidden="true">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Minecraft Map Viewer</title>
     
-    <button 
-      id="lightbox-close" 
-      class="absolute top-4 right-4 sm:top-6 sm:right-6 z-50 p-2 text-neutral-400 hover:text-white bg-neutral-900 border border-neutral-800 rounded-full transition-colors">
-      <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-      </svg>
-    </button>
-
-    <div class="relative max-w-5xl max-h-[90vh] flex items-center justify-center">
-      <img 
-        id="lightbox-image" 
-        src="" 
-        alt="" 
-        class="max-w-full max-h-[85vh] object-contain rounded-lg border border-neutral-800"
-      />
-    </div>
-  </div>
-
-  <footer class="border-t border-neutral-900 py-6 px-4 text-center text-xs text-neutral-600">
-    <p>© <span id="current-year"></span> FITOTOSO</p>
-  </footer>
-
-  <script>
-    document.getElementById('current-year').textContent = new Date().getFullYear();
-
-    const EXTENSIONS = ['png', 'pmg', 'jpg', 'jpeg', 'webp'];
-    const MAX_CONSECUTIVE_MISSES = 2;
-    const MAX_SEARCH = 100;
-
-    const bannerImage = document.getElementById('banner-image');
-    const bannerSkeleton = document.getElementById('banner-skeleton');
-    const galleryGrid = document.getElementById('gallery-grid');
-    const galleryCounter = document.getElementById('gallery-counter');
-    const galleryStatus = document.getElementById('gallery-status');
-
-    function checkImage(url) {
-      return new Promise((resolve) => {
-        const img = new Image();
-        img.onload = () => resolve({ ok: true, url });
-        img.onerror = () => resolve({ ok: false, url });
-        img.src = url;
-      });
-    }
-
-    async function findFitFile(num) {
-      for (const ext of EXTENSIONS) {
-        const path = `fit${num}.${ext}`;
-        const res = await checkImage(path);
-        if (res.ok) return { num, url: path };
-      }
-      return null;
-    }
-
-    async function loadGallery() {
-      let totalFound = 0;
-      let misses = 0;
-
-      // Banner fit1
-      const banner = await findFitFile(1);
-      const bannerSection = document.getElementById('banner-section');
-
-      if (banner) {
-        bannerImage.src = banner.url;
-        bannerImage.onload = () => {
-          bannerSkeleton.classList.add('hidden');
-          bannerImage.classList.remove('opacity-0');
-        };
-      } else if (bannerSection) {
-        bannerSection.classList.add('hidden');
-      }
-
-      // Galeria (fit2 em diante)
-      for (let i = 2; i <= MAX_SEARCH; i++) {
-        const item = await findFitFile(i);
-        if (item) {
-          addCard(item.url);
-          misses = 0;
-          totalFound++;
-          galleryCounter.textContent = `${totalFound} ${totalFound === 1 ? 'foto' : 'fotos'}`;
-        } else {
-          misses++;
-          if (misses >= MAX_CONSECUTIVE_MISSES) break;
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <style>
+        :root {
+            --bg-dark: #09090b;
+            --bg-panel: rgba(15, 15, 15, 0.88);
+            --bg-hover: rgba(255, 255, 255, 0.08);
+            --primary: #ffffff;
+            --primary-text: #000000;
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --icon-scale: 1;
+            --label-scale: 1;
         }
-      }
 
-      if (totalFound === 0) {
-        galleryStatus.classList.remove('hidden');
-        galleryCounter.textContent = '';
-      }
-    }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            font-size: 20px;
+            user-select: none;
+        }
 
-    function addCard(url) {
-      const card = document.createElement('div');
-      card.className = "break-inside-avoid mb-4 rounded-xl overflow-hidden bg-matte-900 border border-neutral-800/80 cursor-pointer hover:border-neutral-700 transition-colors";
+        html, body { 
+            margin: 0; padding: 0; width: 100%; height: 100%; 
+            background: var(--bg-dark); font-family: 'Inter', sans-serif; 
+            overflow: hidden; color: var(--text-main); position: fixed; touch-action: none; 
+        }
+        
+        /* === BARRA SUPERIOR === */
+        #top-bar {
+            position: absolute; top: 0; left: 0; right: 0; height: 60px; 
+            background: var(--bg-panel); backdrop-filter: blur(16px); 
+            border-bottom: 1px solid rgba(255,255,255,0.05); z-index: 2000; 
+            display: flex; align-items: center; justify-content: space-between; padding: 0 20px; gap: 10px;
+        }
+        .brand { font-size: 16px; font-weight: 600; display: flex; align-items: center; gap: 8px; white-space: nowrap; flex-shrink: 0; }
+        .brand .material-symbols-outlined { color: var(--primary); }
 
-      const wrapper = document.createElement('div');
-      wrapper.className = "relative w-full";
+        /* === SELETOR DE DIMENSÕES (Profundidade sutil e sóbria) === */
+        .dimension-tabs {
+            display: flex;
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 8px;
+            padding: 3px;
+            gap: 3px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+            flex-shrink: 0;
+        }
+        .dim-btn {
+            background: transparent;
+            border: 1px solid transparent;
+            color: var(--text-muted);
+            padding: 5px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            transition: background 0.15s ease, color 0.15s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            white-space: nowrap;
+        }
+        .dim-btn .material-symbols-outlined { font-size: 16px; }
+        .dim-btn:hover:not(.active) {
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.04);
+        }
+        .dim-btn.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: #ffffff;
+            font-weight: 600;
+            border-color: rgba(255, 255, 255, 0.1);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        }
 
-      const skeleton = document.createElement('div');
-      skeleton.className = "skeleton-shimmer h-48 w-full";
+        /* === BUSCA (Profundidade simples e limpa) === */
+        .search-wrapper { 
+            display: flex; align-items: center; flex: 1; max-width: 340px;
+            margin: 0 6px; position: relative; min-width: 0;
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+            border-radius: 8px; padding: 0 10px;
+            transition: border-color 0.15s ease;
+        }
+        .search-wrapper:focus-within {
+            border-color: rgba(255, 255, 255, 0.16);
+        }
+        .search-icon {
+            color: var(--text-muted);
+            margin-right: 8px;
+            font-size: 18px;
+            flex-shrink: 0;
+            opacity: 0.75;
+        }
+        
+        #search-input { 
+            flex: 1; background: transparent; border: none; color: white; 
+            font-family: 'Inter'; font-size: 13px; outline: none; padding: 8px 0; min-width: 0;
+        }
+        #search-input::placeholder { color: var(--text-muted); opacity: 0.65; }
 
-      const img = document.createElement('img');
-      img.src = url;
-      img.alt = "";
-      img.loading = "lazy";
-      img.className = "w-full h-auto block opacity-0 transition-opacity duration-300";
+        .clear-btn {
+            background: transparent; border: none; color: var(--text-muted); cursor: pointer;
+            display: none; align-items: center; justify-content: center; width: 26px; height: 26px;
+            margin-left: auto; flex-shrink: 0; padding: 0;
+        }
+        .clear-btn:hover { color: white; }
+        .clear-btn.active { display: flex; }
 
-      img.onload = () => {
-        skeleton.remove();
-        img.classList.remove('opacity-0');
-      };
+        #search-results {
+            position: absolute; top: calc(100% + 10px); left: 0; right: 0; 
+            background: var(--bg-panel); backdrop-filter: blur(16px);
+            border-radius: 8px; max-height: 250px; overflow-y: auto; display: none; 
+            border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2001;
+        }
+        .search-item { padding: 10px 14px; cursor: pointer; border-bottom: 1px solid rgba(255,255,255,0.03); display: flex; justify-content: space-between; align-items: center; font-size: 13px; gap: 10px; }
+        .search-item:hover:not(.empty) { background: var(--bg-hover); }
+        .search-item-info { display: flex; align-items: center; gap: 8px; overflow: hidden; }
+        .search-item-info span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .search-item-info img { width: 16px; height: 16px; flex-shrink: 0; object-fit: contain; }
+        .search-item-coords { font-size: 11px; color: var(--text-muted); font-family: monospace; white-space: nowrap; flex-shrink: 0; }
+        .search-item.empty { color: var(--text-muted); cursor: default; justify-content: center; font-style: italic; }
 
-      wrapper.appendChild(skeleton);
-      wrapper.appendChild(img);
-      card.appendChild(wrapper);
+        /* === FILTROS DISCRETOS === */
+        .filter-wrapper { position: relative; display: flex; align-items: center; flex-shrink: 0; }
+        
+        .filter-trigger {
+            background: rgba(0, 0, 0, 0.35);
+            border: 1px solid rgba(255,255,255,0.06);
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
+            color: var(--text-muted); padding: 6px 10px; border-radius: 8px;
+            display: flex; align-items: center; gap: 6px; font-size: 13px; font-family: 'Inter';
+            cursor: pointer; transition: 0.15s; white-space: nowrap;
+        }
+        .filter-trigger:hover { background: rgba(255,255,255,0.05); color: white; }
+        .filter-trigger.menu-open { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.15); color: white; }
+        .filter-trigger.active-state { color: white; border-color: rgba(255,255,255,0.2); }
 
-      card.addEventListener('click', () => openLightbox(url));
-      galleryGrid.appendChild(card);
-    }
+        #filter-dropdown-menu {
+            position: absolute; top: calc(100% + 10px); right: 0; width: 210px;
+            background: var(--bg-panel); backdrop-filter: blur(16px);
+            border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2002;
+            display: none; flex-direction: column; padding: 6px; gap: 2px;
+            max-height: 60vh; overflow-y: auto;
+        }
+        #filter-dropdown-menu.active { display: flex; }
+        
+        .filter-option {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 9px 12px; cursor: pointer; border-radius: 6px;
+            color: var(--text-muted); transition: background 0.15s, color 0.15s;
+        }
+        .filter-option:hover { background: var(--bg-hover); color: white; }
+        .filter-option.selected { background: rgba(255,255,255,0.08); color: white; }
+        .filter-option .filter-name { font-size: 13px; font-weight: 500; }
+        .filter-option img { width: 18px; height: 18px; object-fit: contain; opacity: 0.8; }
+        .filter-option.selected img { opacity: 1; }
 
-    // Modal mapa
-    const btnOpenModal = document.getElementById('btn-open-modal');
-    const btnCloseModal = document.getElementById('btn-close-modal');
-    const mapModal = document.getElementById('map-modal');
-    const modalOverlay = document.getElementById('modal-overlay');
-    const mapImage = document.getElementById('map-image');
-    const mapFallback = document.getElementById('map-fallback');
+        /* === CONTROLES DO TOPO === */
+        .top-controls { display: flex; gap: 4px; flex-shrink: 0; }
+        .icon-btn { 
+            position: relative; background: transparent; border: none; color: var(--text-muted); 
+            cursor: pointer; width: 38px; height: 38px; border-radius: 8px; 
+            transition: all 0.15s ease; display: flex; align-items: center; justify-content: center; 
+        }
+        .icon-btn:hover { background: var(--bg-hover); color: var(--primary); }
+        .icon-btn:active { transform: scale(0.94); }
 
-    mapImage.onerror = () => {
-      mapImage.classList.add('hidden');
-      mapFallback.classList.remove('hidden');
-    };
+        /* Tooltip Customizado */
+        .has-tooltip::after {
+            content: attr(data-tooltip);
+            position: absolute; top: 120%; left: 50%; transform: translateX(-50%) translateY(5px);
+            background: rgba(0, 0, 0, 0.9); border: 1px solid rgba(255,255,255,0.1); color: white;
+            padding: 6px 10px; border-radius: 6px; font-size: 12px; font-weight: 500; font-family: 'Inter';
+            white-space: nowrap; opacity: 0; pointer-events: none; transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3); z-index: 3000;
+        }
+        .has-tooltip:hover::after { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    function openModal() {
-      mapModal.classList.remove('opacity-0', 'pointer-events-none');
-      document.body.style.overflow = 'hidden';
-    }
+        /* === MODAIS & PAINEL LATERAL === */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(3px); z-index: 3000; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease; }
+        .modal-overlay.active { display: flex; opacity: 1; }
+        .modal-content { background: #111; padding: 30px; border-radius: 12px; max-width: 400px; width: 85%; border: 1px solid rgba(255,255,255,0.1); transform: scale(0.95); transition: transform 0.2s ease; position: relative; text-align: center; }
+        .modal-overlay.active .modal-content { transform: scale(1); }
+        .modal-content .material-symbols-outlined { font-size: 40px; color: var(--primary); margin-bottom: 10px; }
+        .modal-content h2 { margin: 0 0 10px 0; font-size: 18px; font-weight: 500; }
+        .modal-content p { color: var(--text-muted); line-height: 1.5; font-size: 14px; margin-bottom: 20px; text-align: left; }
+        .close-modal-btn { position: absolute; top: 15px; right: 15px; background: transparent; border: none; color: var(--text-muted); cursor: pointer; transition: 0.15s; display: flex; padding: 0; }
+        .close-modal-btn:hover { color: white; }
+        
+        #ui-panel { 
+            position: absolute; top: 70px; right: 15px; z-index: 2000; width: 280px; max-width: calc(100vw - 30px); 
+            background: var(--bg-panel); backdrop-filter: blur(16px); border-radius: 12px; padding: 20px; 
+            border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
+            transform: translateX(calc(100% + 50px)); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; 
+        }
+        #ui-panel.active { transform: translateX(0); }
+        .panel-section { margin-bottom: 20px; }
+        .panel-section h3 { margin: 0 0 12px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666; }
+        
+        /* Barra de Desenho Limpa (Sem bolinha verde bugada) */
+        .draw-toolbar { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 10px; }
+        .draw-btn {
+            position: relative; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text-muted); border-radius: 6px; width: 40px; height: 40px;
+            display: flex; align-items: center; justify-content: center; cursor: pointer;
+            transition: 0.15s; flex: 1;
+        }
+        .draw-btn:hover { background: rgba(255,255,255,0.1); color: white; }
+        .draw-btn.active { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
+        .draw-btn.danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
+        .draw-btn.danger:hover { background: #ef4444; color: white; }
+        .draw-status { font-size: 12px; color: var(--primary); text-align: center; margin-top: 5px; min-height: 15px; font-weight: 500; }
+        
+        .control-row { margin-bottom: 10px; display: flex; align-items: center; font-size: 13px; cursor: pointer; color: var(--text-muted); transition: color 0.2s; }
+        .control-row:hover { color: var(--text-main); }
+        .control-row input[type="checkbox"] { appearance: none; width: 18px; height: 18px; border: 1.5px solid #666; border-radius: 4px; margin-right: 12px; outline: none; cursor: pointer; transition: all 0.2s; background: transparent; position: relative; }
+        .control-row input[type="checkbox"]:checked { background: var(--primary); border-color: var(--primary); }
+        .control-row input[type="checkbox"]:checked::after { content: ''; position: absolute; top: 1px; left: 5px; width: 3px; height: 8px; border: solid var(--primary-text); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+        
+        .slider-wrapper { margin-bottom: 10px; }
+        .slider-wrapper label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; color: var(--text-muted); }
+        input[type="range"] { width: 100%; appearance: none; height: 2px; background: rgba(255,255,255,0.1); border-radius: 2px; outline: none; }
+        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--primary); cursor: pointer; transition: 0.15s; }
+        
+        .btn-gallery { width: 100%; padding: 8px; border: none; border-radius: 6px; background: var(--primary); color: var(--primary-text); font-weight: 600; font-family: 'Inter'; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }
+        .btn-gallery:hover { background: #e4e4e7; }
+        
+        /* === GALERIA (LOCAIS E HOMENAGENS) === */
+        #gallery-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); z-index: 4500; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease; }
+        #gallery-overlay.active { display: flex; opacity: 1; }
+        .gallery-container { width: 100%; height: 100%; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
+        .gallery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 10px; }
+        .gallery-title { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; }
+        .gallery-counter { background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; font-family: monospace; }
+        .gallery-body { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 0; position: relative; }
+        .gallery-main { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; gap: 10px; }
+        .gallery-main img { max-width: 100%; max-height: calc(100% - 35px); object-fit: contain; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transition: opacity 0.15s ease; }
+        .gallery-caption { color: var(--text-muted); font-size: 13px; text-align: center; max-width: 600px; }
+        .gallery-nav { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; padding: 10px; gap: 10px; transition: background 0.15s; min-width: 70px; }
+        .gallery-nav:hover { background: rgba(255,255,255,0.1); }
+        .gallery-nav img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; opacity: 0.5; }
+        .gallery-close-top { background: rgba(255,255,255,0.08); border: none; color: white; width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; }
+        .gallery-close-top:hover { background: rgba(255,255,255,0.16); }
 
-    function closeModal() {
-      mapModal.classList.add('opacity-0', 'pointer-events-none');
-      document.body.style.overflow = '';
-    }
+        /* === GALERIA DE HOMENAGENS (Design Sóbrio e Estável) === */
+        #tributes-overlay {
+            position: fixed; inset: 0; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(12px);
+            z-index: 4000; display: none; flex-direction: column; opacity: 0; transition: opacity 0.2s ease;
+        }
+        #tributes-overlay.active { display: flex; opacity: 1; }
+        .tributes-header {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: var(--bg-panel);
+        }
+        .tributes-title-group { display: flex; align-items: center; gap: 10px; }
+        .tributes-title-group .material-symbols-outlined { font-size: 22px; color: var(--primary); }
+        .tributes-title-group h2 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-main); }
 
-    btnOpenModal.addEventListener('click', openModal);
-    btnCloseModal.addEventListener('click', closeModal);
-    modalOverlay.addEventListener('click', closeModal);
+        .tributes-grid-wrapper {
+            flex: 1; overflow-y: auto; padding: 24px;
+            max-width: 1200px; width: 100%; margin: 0 auto; box-sizing: border-box;
+        }
+        .tributes-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 16px;
+        }
+        .tribute-card {
+            background: #121214;
+            border: 1px solid rgba(255,255,255,0.07);
+            border-radius: 8px;
+            overflow: hidden;
+            cursor: pointer;
+            transition: border-color 0.15s ease, background 0.15s ease;
+            display: flex; flex-direction: column;
+        }
+        .tribute-card:hover {
+            border-color: rgba(255, 255, 255, 0.2);
+            background: #161618;
+        }
+        .tribute-card-img-wrap {
+            width: 100%; height: 170px; background: #09090b; overflow: hidden;
+        }
+        .tribute-card-img-wrap img {
+            width: 100%; height: 100%; object-fit: cover; display: block;
+        }
+        .tribute-card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
+        .tribute-card-title { font-size: 14px; font-weight: 500; color: var(--text-main); }
+        .tribute-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
+        .tributes-empty {
+            grid-column: 1 / -1;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            padding: 60px 20px;
+        }
 
-    // Lightbox
-    const lightboxModal = document.getElementById('lightbox-modal');
-    const lightboxImage = document.getElementById('lightbox-image');
-    const lightboxClose = document.getElementById('lightbox-close');
+        /* === MAPA BASE === */
+        #map-container { position: absolute; top: 60px; left: 0; right: 0; bottom: 0; z-index: 1; }
+        #map { width: 100%; height: 100%; background: var(--bg-dark); outline: none; image-rendering: pixelated; }
+        .leaflet-container.crosshair-cursor-enabled, .leaflet-container.crosshair-cursor-enabled .leaflet-interactive { cursor: crosshair !important; }
+        .scalable-icon { transform: scale(var(--icon-scale)); transform-origin: bottom center; transition: transform 0.1s; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5)); }
+        
+        .map-label-container { background: transparent; border: none; box-shadow: none; pointer-events: none; }
+        .map-label-text { color: white; text-shadow: 0px 2px 4px rgba(0,0,0,0.9), -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; font-weight: 600; font-family: 'Inter'; text-align: center; white-space: nowrap; transform: scale(var(--label-scale)); transform-origin: top center; transition: transform 0.1s; }
+        .measure-tooltip { background: var(--bg-panel); border: 1px solid rgba(255,255,255,0.2); color: white; border-radius: 6px; font-family: monospace; font-size: 12px; font-weight: bold; padding: 6px 10px; box-shadow: 0 8px 16px rgba(0,0,0,0.6); backdrop-filter: blur(8px); }
+        .invisible-icon { width: 0 !important; height: 0 !important; opacity: 0; margin: 0 !important; }
 
-    function openLightbox(url) {
-      lightboxImage.src = url;
-      lightboxModal.classList.remove('opacity-0', 'pointer-events-none');
-      document.body.style.overflow = 'hidden';
-    }
+        #cursor-coords { position: fixed; z-index: 9999; pointer-events: none; background: rgba(0, 0, 0, 0.75); backdrop-filter: blur(4px); border: 1px solid rgba(255,255,255,0.1); color: var(--text-main); padding: 4px 10px; border-radius: 6px; font-family: monospace; font-size: 11px; display: none; transform: translate(15px, 15px); box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        
+        .leaflet-control-zoom { border: 1px solid rgba(255,255,255,0.1) !important; border-radius: 6px !important; overflow: hidden; margin-top: 15px !important; }
+        .leaflet-bar a { background: var(--bg-panel) !important; color: var(--text-muted) !important; border-bottom: 1px solid rgba(255,255,255,0.05) !important; }
+        .leaflet-bar a:hover { background: var(--bg-hover) !important; color: white !important; }
 
-    function closeLightbox() {
-      lightboxModal.classList.add('opacity-0', 'pointer-events-none');
-      document.body.style.overflow = '';
-    }
+        /* === RESPONSIVIDADE & MOBILE === */
+        @media (max-width: 768px) {
+            #top-bar { padding: 0 10px; gap: 6px; }
+            .brand .text-brand { display: none; }
+            .brand { margin-right: 0; gap: 0; }
+            
+            /* Seletor de dimensões centralizado na parte inferior em telas mobile */
+            .dimension-tabs {
+                position: fixed;
+                bottom: 16px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 2500;
+                background: rgba(15, 15, 15, 0.92);
+                backdrop-filter: blur(16px);
+                padding: 4px;
+                border-radius: 8px;
+                border: 1px solid rgba(255,255,255,0.1);
+                box-shadow: 0 6px 20px rgba(0,0,0,0.6), inset 0 1px 3px rgba(0,0,0,0.6);
+            }
+            .dim-btn { padding: 6px 12px; font-size: 12px; }
 
-    lightboxClose.addEventListener('click', closeLightbox);
-    lightboxModal.addEventListener('click', (e) => {
-      if (e.target === lightboxModal) closeLightbox();
-    });
+            .search-wrapper { margin: 0 4px; min-width: 0; padding: 0 8px; }
+            .search-icon { margin-right: 6px; font-size: 18px; }
+            #search-input { font-size: 13px; }
+            
+            .filter-wrapper { margin: 0; }
+            .filter-trigger .filter-text { display: none; }
+            .filter-trigger .material-symbols-outlined:last-child { display: none; }
+            .filter-trigger { padding: 8px; border-radius: 8px; gap: 0; justify-content: center; }
+            
+            .top-controls { gap: 0; }
+            .icon-btn { width: 36px; height: 36px; }
+            
+            #cursor-coords, .leaflet-control-zoom { display: none !important; } 
+            .gallery-container { padding: 10px; }
+            .gallery-nav img { display: none; } 
+            .gallery-nav { min-width: 45px; padding: 15px 5px; }
+            .tributes-header { padding: 14px 16px; }
+            .tributes-grid-wrapper { padding: 16px; }
+            .has-tooltip::after { display: none !important; }
+        }
+    </style>
+</head>
+<body>
 
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape') {
-        closeModal();
-        closeLightbox();
-      }
-    });
+    <div id="cursor-coords">X: 0 | Z: 0</div>
 
-    loadGallery();
-  </script>
+    <header id="top-bar">
+        <div class="brand">
+            <span class="material-symbols-outlined">map</span>
+            <span class="text-brand">Mapa</span>
+        </div>
+
+        <!-- SELETOR DE DIMENSÕES -->
+        <div class="dimension-tabs" id="dimension-tabs">
+            <button class="dim-btn active" data-dim="overworld">
+                <span class="material-symbols-outlined">public</span>
+                <span>Overworld</span>
+            </button>
+            <button class="dim-btn" data-dim="nether">
+                <span class="material-symbols-outlined">local_fire_department</span>
+                <span>Nether</span>
+            </button>
+            <button class="dim-btn" data-dim="end">
+                <span class="material-symbols-outlined">dark_mode</span>
+                <span>The End</span>
+            </button>
+        </div>
+        
+        <!-- BARRA DE BUSCA -->
+        <div class="search-wrapper" id="search-wrapper">
+            <span class="material-symbols-outlined search-icon">search</span>
+            <input type="text" id="search-input" placeholder="Buscar local...">
+            
+            <button class="clear-btn" id="btn-clear-search" title="Limpar Busca">
+                <span class="material-symbols-outlined" style="font-size: 16px;">close</span>
+            </button>
+            
+            <div id="search-results"></div>
+        </div>
+
+        <!-- FILTROS DE CATEGORIA -->
+        <div class="filter-wrapper">
+            <button class="filter-trigger has-tooltip" id="btn-filter-trigger" data-tooltip="Filtrar Categorias">
+                <span class="material-symbols-outlined filter-icon-main" style="font-size: 18px;">filter_alt</span>
+                <span id="active-filter-text" class="filter-text">Todos</span>
+                <span class="material-symbols-outlined" style="font-size: 16px;">expand_more</span>
+            </button>
+
+            <div id="filter-dropdown-menu"></div>
+        </div>
+
+        <div class="top-controls">
+            <button class="icon-btn has-tooltip" id="btn-tributes" data-tooltip="Galeria de Homenagens">
+                <span class="material-symbols-outlined">collections_bookmark</span>
+            </button>
+            <button class="icon-btn has-tooltip" id="btn-reset-view" data-tooltip="Visão Global">
+                <span class="material-symbols-outlined">visibility</span>
+            </button>
+            <button class="icon-btn has-tooltip" id="btn-info" data-tooltip="Informações do Mapa">
+                <span class="material-symbols-outlined">info</span>
+            </button>
+            <button class="icon-btn has-tooltip" id="btn-toggle-panel" data-tooltip="Configurações">
+                <span class="material-symbols-outlined">tune</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Modal de Informação -->
+    <div id="info-modal-overlay" class="modal-overlay">
+        <div class="modal-content">
+            <button class="close-modal-btn" id="btn-close-modal"><span class="material-symbols-outlined">close</span></button>
+            <span class="material-symbols-outlined">public</span>
+            <h2>Mapa da Comunidade</h2>
+            <p>Este mapa interativo foi construído unindo capturas das regiões exploradas no jogo.</p>
+            <p style="margin-bottom: 0;">Ele não atualiza em tempo real. Use-o como um guia estratégico para planejar as suas rotas e construções.</p>
+        </div>
+    </div>
+
+    <!-- Galeria de Homenagens -->
+    <div id="tributes-overlay">
+        <div class="tributes-header">
+            <div class="tributes-title-group">
+                <span class="material-symbols-outlined">collections_bookmark</span>
+                <h2>Galeria de Homenagens</h2>
+            </div>
+            <button class="gallery-close-top" id="btn-close-tributes" title="Fechar">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="tributes-grid-wrapper">
+            <div class="tributes-grid" id="tributes-grid"></div>
+        </div>
+    </div>
+
+    <!-- Galeria Lightbox (Visualizador de Imagens) -->
+    <div id="gallery-overlay">
+        <div class="gallery-container">
+            <div class="gallery-header">
+                <div class="gallery-title">
+                    <span class="material-symbols-outlined">photo_library</span>
+                    <span id="gallery-title-text">Local</span>
+                </div>
+                <div style="display: flex; gap: 15px; align-items: center;">
+                    <div class="gallery-counter" id="gallery-counter">1 / 1</div>
+                    <button class="gallery-close-top" id="btn-close-gallery"><span class="material-symbols-outlined">close</span></button>
+                </div>
+            </div>
+            
+            <div class="gallery-body">
+                <button class="gallery-nav prev" id="btn-gallery-prev">
+                    <img id="gallery-preview-prev" src="" alt="">
+                    <span class="material-symbols-outlined">chevron_left</span>
+                </button>
+                <div class="gallery-main">
+                    <img id="gallery-main-image" src="" alt="Imagem da Galeria">
+                    <div class="gallery-caption" id="gallery-caption"></div>
+                </div>
+                <button class="gallery-nav next" id="btn-gallery-next">
+                    <span class="material-symbols-outlined">chevron_right</span>
+                    <img id="gallery-preview-next" src="" alt="">
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Painel Lateral de Configurações -->
+    <div id="ui-panel">
+        <div class="panel-section">
+            <h3>Edição Livre</h3>
+            <div class="draw-toolbar">
+                <button class="draw-btn has-tooltip" data-tool="freehand" data-tooltip="Lápis Livre"><span class="material-symbols-outlined">draw</span></button>
+                <button class="draw-btn has-tooltip" data-tool="measure" data-tooltip="Medir Distância"><span class="material-symbols-outlined">straighten</span></button>
+                <button class="draw-btn has-tooltip" data-tool="rectangle" data-tooltip="Desenhar Área"><span class="material-symbols-outlined">rectangle</span></button>
+                <button class="draw-btn has-tooltip" data-tool="circle" data-tooltip="Raio"><span class="material-symbols-outlined">circle</span></button>
+                <button class="draw-btn danger has-tooltip" id="btn-clear-draw" data-tooltip="Apagar Tudo"><span class="material-symbols-outlined">delete</span></button>
+            </div>
+            <div class="draw-status" id="draw-status-text"></div>
+        </div>
+
+        <div class="panel-section">
+            <h3>Visibilidade</h3>
+            <label class="control-row"><input type="checkbox" id="toggle-markers" class="save-state" checked> Mostrar Marcadores</label>
+            <label class="control-row"><input type="checkbox" id="toggle-labels" class="save-state" checked> Mostrar Nomes</label>
+            <label class="control-row"><input type="checkbox" id="toggle-drawings" class="save-state" checked> Mostrar Traços Livres</label>
+        </div>
+
+        <div class="panel-section">
+            <h3>Escala Visual</h3>
+            <div class="slider-wrapper"><label>Ícones <span id="val-icon">1.0x</span></label><input type="range" id="slider-icon" class="save-state" min="0.5" max="2.0" step="0.1" value="1"></div>
+            <div class="slider-wrapper"><label>Textos <span id="val-label">1.0x</span></label><input type="range" id="slider-label" class="save-state" min="0.5" max="2.0" step="0.1" value="1"></div>
+        </div>
+        <div class="panel-section" style="margin-bottom: 0;">
+            <h3>Sistema</h3>
+            <label class="control-row"><input type="checkbox" id="toggle-zoom-lock" class="save-state"> Travar Câmera</label>
+            <label class="control-row"><input type="checkbox" id="toggle-grid" class="save-state"> Mostrar Grelha (1000x1000)</label>
+            <label class="control-row" style="margin-top: 5px;"><input type="checkbox" id="toggle-sounds" class="save-state" checked> Sons de Interface</label>
+        </div>
+    </div>
+
+    <!-- Mapa -->
+    <div id="map-container">
+        <div id="map"></div>
+    </div>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    
+    <script>
+        // =========================================================================
+        // 1. CARREGAMENTO DE DADOS (./data/markers.json, ./data/prints.json)
+        // =========================================================================
+        let externalMarkersData = null;
+        let externalPrintsData = null;
+        let externalTributesData = null;
+
+        async function fetchInitialDataFiles() {
+            if (externalMarkersData === null) {
+                try {
+                    const resM = await fetch('./data/markers.json');
+                    if (resM.ok) externalMarkersData = await resM.json();
+                } catch (e) {}
+                if (!externalMarkersData) externalMarkersData = [];
+            }
+
+            if (externalPrintsData === null) {
+                try {
+                    const resP = await fetch('./data/prints.json');
+                    if (resP.ok) externalPrintsData = await resP.json();
+                } catch (e) {}
+                if (!externalPrintsData) externalPrintsData = {};
+            }
+
+            if (externalTributesData === null) {
+                try {
+                    const resH = await fetch('./data/homenagens.json');
+                    if (resH.ok) externalTributesData = await resH.json();
+                } catch (e) {}
+            }
+        }
+
+        // =========================================================================
+        // 2. SISTEMA DE ÁUDIO
+        // =========================================================================
+        const audioLibrary = {
+            click: new Audio('./static/sounds/click.mp3'),
+            open: new Audio('./static/sounds/open.mp3'),
+            close: new Audio('./static/sounds/close.mp3'),
+            toggleOn: new Audio('./static/sounds/toggle_on.mp3'),
+            toggleOff: new Audio('./static/sounds/toggle_off.mp3'),
+            clear: new Audio('./static/sounds/clear.mp3')
+        };
+        Object.values(audioLibrary).forEach(audio => { audio.volume = 0.5; });
+
+        function playSound(type) {
+            const toggleSounds = document.getElementById('toggle-sounds');
+            if (toggleSounds && !toggleSounds.checked) return;
+            const sound = audioLibrary[type];
+            if (sound) {
+                const clone = sound.cloneNode();
+                clone.volume = sound.volume;
+                clone.play().catch(() => {});
+            }
+        }
+
+        // =========================================================================
+        // 3. LOCAL STORAGE
+        // =========================================================================
+        const defaultSettings = {
+            markers: true, labels: true, drawings: true,
+            zoomLock: false, grid: false, sounds: true,
+            iconScale: 1, labelScale: 1
+        };
+
+        function saveSettings() {
+            const settings = {
+                markers: document.getElementById('toggle-markers').checked,
+                labels: document.getElementById('toggle-labels').checked,
+                drawings: document.getElementById('toggle-drawings').checked,
+                zoomLock: document.getElementById('toggle-zoom-lock').checked,
+                grid: document.getElementById('toggle-grid').checked,
+                sounds: document.getElementById('toggle-sounds').checked,
+                iconScale: document.getElementById('slider-icon').value,
+                labelScale: document.getElementById('slider-label').value
+            };
+            localStorage.setItem('mcMapSettings', JSON.stringify(settings));
+        }
+
+        function loadSettings() {
+            const saved = JSON.parse(localStorage.getItem('mcMapSettings')) || defaultSettings;
+            document.getElementById('toggle-markers').checked = saved.markers;
+            document.getElementById('toggle-labels').checked = saved.labels;
+            document.getElementById('toggle-drawings').checked = saved.drawings;
+            document.getElementById('toggle-zoom-lock').checked = saved.zoomLock;
+            document.getElementById('toggle-grid').checked = saved.grid;
+            document.getElementById('toggle-sounds').checked = saved.sounds !== undefined ? saved.sounds : true;
+            document.getElementById('slider-icon').value = saved.iconScale;
+            document.getElementById('slider-label').value = saved.labelScale;
+            document.documentElement.style.setProperty('--icon-scale', saved.iconScale);
+            document.getElementById('val-icon').innerText = parseFloat(saved.iconScale).toFixed(1) + 'x';
+            document.documentElement.style.setProperty('--label-scale', saved.labelScale);
+            document.getElementById('val-label').innerText = parseFloat(saved.labelScale).toFixed(1) + 'x';
+        }
+
+        document.querySelectorAll('input[type="checkbox"].save-state').forEach(el => {
+            el.addEventListener('change', (e) => {
+                saveSettings();
+                playSound(e.target.checked ? 'toggleOn' : 'toggleOff');
+            });
+        });
+        document.querySelectorAll('input[type="range"].save-state').forEach(el => {
+            el.addEventListener('input', saveSettings);
+            el.addEventListener('change', () => playSound('click'));
+        });
+
+        // =========================================================================
+        // 4. CONTROLE DE CLIQUES E FECHAMENTOS
+        // =========================================================================
+        document.addEventListener('click', (e) => {
+            const btnTogglePanel = document.getElementById('btn-toggle-panel');
+            const uiPanel = document.getElementById('ui-panel');
+            
+            if (btnTogglePanel.contains(e.target)) {
+                const isActive = uiPanel.classList.toggle('active');
+                playSound(isActive ? 'open' : 'close');
+            } else if (uiPanel.classList.contains('active') && !uiPanel.contains(e.target)) {
+                uiPanel.classList.remove('active');
+                playSound('close');
+            }
+
+            const btnFilterTrigger = document.getElementById('btn-filter-trigger');
+            const filterMenu = document.getElementById('filter-dropdown-menu');
+            
+            if (btnFilterTrigger.contains(e.target)) {
+                const isActive = filterMenu.classList.toggle('active');
+                btnFilterTrigger.classList.toggle('menu-open', isActive);
+                playSound(isActive ? 'open' : 'close');
+            } else if (filterMenu.classList.contains('active') && !filterMenu.contains(e.target)) {
+                filterMenu.classList.remove('active');
+                btnFilterTrigger.classList.remove('menu-open');
+            }
+
+            const searchWrapper = document.getElementById('search-wrapper');
+            const searchResults = document.getElementById('search-results');
+            
+            if (!searchWrapper.contains(e.target)) {
+                searchResults.style.display = 'none';
+            }
+        });
+
+        // =========================================================================
+        // 5. BUSCA E FILTROS
+        // =========================================================================
+        const searchInput = document.getElementById('search-input');
+        const btnClearSearch = document.getElementById('btn-clear-search');
+        const searchResults = document.getElementById('search-results');
+        let currentFilterValue = 'all';
+        let searchTimeout;
+
+        function formatReadableName(type) {
+            return type.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+        }
+
+        function resolveMarkerIconUrl(m) {
+            if (m.image) return `./${currentDimension}/${m.image}`;
+            if (m.type && m.type !== 'padrão') return `./static/icons/${m.type}.png`;
+            return 'https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png';
+        }
+
+        function applyFilter(value, nameStr) {
+            currentFilterValue = value;
+            
+            document.querySelectorAll('.filter-option').forEach(opt => {
+                opt.classList.toggle('selected', opt.getAttribute('data-value') === value);
+            });
+
+            const activeText = document.getElementById('active-filter-text');
+            const filterTrigger = document.getElementById('btn-filter-trigger');
+
+            if (value === 'all') {
+                activeText.innerText = 'Todos';
+                filterTrigger.classList.remove('active-state');
+            } else {
+                activeText.innerText = nameStr;
+                filterTrigger.classList.add('active-state');
+            }
+            
+            renderFilteredMarkers(value);
+            triggerSearch(); 
+        }
+
+        function triggerSearch() {
+            const term = searchInput.value.toLowerCase().trim();
+            searchResults.innerHTML = '';
+            
+            if (term.length < 1) { 
+                searchResults.style.display = 'none'; 
+                return; 
+            }
+
+            const filtered = loadedMarkers.filter(m => {
+                const textMatch = (m.name || '').toLowerCase().includes(term);
+                const typeMatch = currentFilterValue === 'all' || (m.type || 'padrão') === currentFilterValue;
+                return textMatch && typeMatch;
+            });
+
+            if (filtered.length === 0) {
+                searchResults.innerHTML = `<div class="search-item empty">Nenhum resultado para "${term}"</div>`;
+            } else {
+                filtered.forEach(m => {
+                    const iconSrc = resolveMarkerIconUrl(m);
+                    const div = document.createElement('div'); 
+                    div.className = 'search-item'; 
+                    div.innerHTML = `
+                        <div class="search-item-info">
+                            <img src="${iconSrc}" onerror="this.src='https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png'">
+                            <span>${m.name}</span>
+                        </div>
+                        <span class="search-item-coords">${m.x}, ${m.z}</span>`;
+                    
+                    div.onclick = () => { 
+                        map.flyTo(mcToLatLng(m.x, m.z), Math.min(currentMaxZoom + 1, 2), { duration: 1.5 }); 
+                        searchInput.value = ''; 
+                        btnClearSearch.classList.remove('active'); 
+                        searchResults.style.display = 'none';
+                        playSound('click');
+                    };
+                    searchResults.appendChild(div);
+                });
+            }
+            searchResults.style.display = 'block';
+        }
+
+        searchInput.addEventListener('input', (e) => {
+            const term = e.target.value;
+            btnClearSearch.classList.toggle('active', term.length > 0);
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(triggerSearch, 200);
+        });
+
+        searchInput.addEventListener('focus', () => {
+            if (searchInput.value.trim().length > 0 && searchResults.children.length > 0) {
+                searchResults.style.display = 'block';
+            }
+        });
+
+        btnClearSearch.addEventListener('click', (e) => {
+            e.stopPropagation(); 
+            searchInput.value = '';
+            btnClearSearch.classList.remove('active');
+            searchResults.style.display = 'none';
+            searchInput.focus(); 
+            playSound('clear');
+        });
+
+        const modal = document.getElementById('info-modal-overlay');
+        document.getElementById('btn-info').addEventListener('click', () => { modal.classList.add('active'); playSound('open'); });
+        document.getElementById('btn-close-modal').addEventListener('click', () => { modal.classList.remove('active'); playSound('close'); });
+        modal.addEventListener('click', (e) => { if(e.target === modal) { modal.classList.remove('active'); playSound('close'); } });
+
+        document.getElementById('slider-icon').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--icon-scale', e.target.value);
+            document.getElementById('val-icon').innerText = parseFloat(e.target.value).toFixed(1) + 'x';
+        });
+        document.getElementById('slider-label').addEventListener('input', (e) => {
+            document.documentElement.style.setProperty('--label-scale', e.target.value);
+            document.getElementById('val-label').innerText = parseFloat(e.target.value).toFixed(1) + 'x';
+        });
+
+        // =========================================================================
+        // 6. SISTEMA DE GALERIA DE LOCAIS (./static/galeria/<pasta>/)
+        // =========================================================================
+        let currentGallery = [];
+        let galleryIndex = 0;
+        let galleryFolder = '';
+        const galleryOverlay = document.getElementById('gallery-overlay');
+        const mainImg = document.getElementById('gallery-main-image');
+        const galleryCaption = document.getElementById('gallery-caption');
+        const prevPreview = document.getElementById('gallery-preview-prev');
+        const nextPreview = document.getElementById('gallery-preview-next');
+        const btnPrev = document.getElementById('btn-gallery-prev');
+        const btnNext = document.getElementById('btn-gallery-next');
+
+        function resolveGalleryItemUrl(item, folder) {
+            const raw = typeof item === 'object' ? (item.image || item.file || item.src || '') : item;
+            if (raw.startsWith('http') || raw.startsWith('./') || raw.startsWith('/')) return raw;
+            return `./static/galeria/${folder}/${raw}`;
+        }
+
+        function resolveGalleryItemCaption(item) {
+            if (typeof item === 'object') return item.description || item.caption || '';
+            return '';
+        }
+
+        window.openGallery = async function(title, folder) {
+            playSound('open');
+            await fetchInitialDataFiles();
+
+            let images = [];
+            if (externalPrintsData && externalPrintsData[folder]) {
+                images = externalPrintsData[folder];
+            } else if (Array.isArray(externalPrintsData)) {
+                images = externalPrintsData.filter(p => p.gallery === folder || p.folder === folder);
+            }
+
+            if (!images || images.length === 0) {
+                alert('Nenhuma imagem foi encontrada na galeria deste local.');
+                return;
+            }
+
+            currentGallery = images;
+            galleryIndex = 0;
+            galleryFolder = folder;
+            document.getElementById('gallery-title-text').innerText = title;
+            updateGalleryUI();
+            galleryOverlay.classList.add('active');
+        };
+
+        function updateGalleryUI() {
+            const total = currentGallery.length;
+            document.getElementById('gallery-counter').innerText = `${galleryIndex + 1} / ${total}`;
+            mainImg.style.opacity = 0;
+
+            const currentItem = currentGallery[galleryIndex];
+            const primaryUrl = resolveGalleryItemUrl(currentItem, galleryFolder);
+            const captionText = resolveGalleryItemCaption(currentItem);
+            galleryCaption.innerText = captionText;
+            galleryCaption.style.display = captionText ? 'block' : 'none';
+
+            setTimeout(() => {
+                mainImg.onerror = () => {
+                    if (mainImg.src.includes('/static/galeria/')) {
+                        mainImg.src = mainImg.src.replace('/static/galeria/', '/galeria/');
+                    }
+                };
+                mainImg.src = primaryUrl;
+                mainImg.onload = () => { mainImg.style.opacity = 1; };
+            }, 120);
+
+            if (total > 1) {
+                btnPrev.style.visibility = 'visible';
+                btnNext.style.visibility = 'visible';
+                prevPreview.src = resolveGalleryItemUrl(currentGallery[(galleryIndex - 1 + total) % total], galleryFolder);
+                nextPreview.src = resolveGalleryItemUrl(currentGallery[(galleryIndex + 1) % total], galleryFolder);
+            } else {
+                btnPrev.style.visibility = 'hidden';
+                btnNext.style.visibility = 'hidden';
+            }
+        }
+
+        btnNext.addEventListener('click', (e) => { e.stopPropagation(); galleryIndex = (galleryIndex + 1) % currentGallery.length; updateGalleryUI(); playSound('click'); });
+        btnPrev.addEventListener('click', (e) => { e.stopPropagation(); galleryIndex = (galleryIndex - 1 + currentGallery.length) % currentGallery.length; updateGalleryUI(); playSound('click'); });
+        const closeGallery = () => { galleryOverlay.classList.remove('active'); playSound('close'); };
+        document.getElementById('btn-close-gallery').addEventListener('click', closeGallery);
+        galleryOverlay.addEventListener('click', (e) => { if(e.target === galleryOverlay) closeGallery(); });
+
+        // =========================================================================
+        // 7. GALERIA DE HOMENAGENS (Sem exemplos falsos e sem animações exageradas)
+        // =========================================================================
+        const tributesOverlay = document.getElementById('tributes-overlay');
+        const tributesGrid = document.getElementById('tributes-grid');
+
+        function getTributesList() {
+            if (Array.isArray(externalTributesData) && externalTributesData.length > 0) {
+                return externalTributesData;
+            }
+            if (externalPrintsData && Array.isArray(externalPrintsData.homenagens) && externalPrintsData.homenagens.length > 0) {
+                return externalPrintsData.homenagens.map((item, idx) => {
+                    if (typeof item === 'string') {
+                        return {
+                            name: `Homenagem #${idx + 1}`,
+                            description: '',
+                            image: `./static/galeria/homenagens/${item}`
+                        };
+                    }
+                    return {
+                        name: item.name || item.title || `Homenagem #${idx + 1}`,
+                        description: item.description || item.caption || '',
+                        image: item.image && (item.image.startsWith('./') || item.image.startsWith('http'))
+                            ? item.image
+                            : `./static/galeria/homenagens/${item.image || item.file}`
+                    };
+                });
+            }
+            return [];
+        }
+
+        async function openTributesModal() {
+            playSound('open');
+            await fetchInitialDataFiles();
+            const list = getTributesList();
+            tributesGrid.innerHTML = '';
+
+            if (list.length === 0) {
+                tributesGrid.innerHTML = `<div class="tributes-empty">Nenhuma homenagem cadastrada até o momento.</div>`;
+            } else {
+                list.forEach((item, index) => {
+                    const card = document.createElement('div');
+                    card.className = 'tribute-card';
+                    card.innerHTML = `
+                        <div class="tribute-card-img-wrap">
+                            <img src="${item.image}" alt="${item.name}">
+                        </div>
+                        <div class="tribute-card-body">
+                            <div class="tribute-card-title">${item.name}</div>
+                            ${item.description ? `<div class="tribute-card-desc">${item.description}</div>` : ''}
+                        </div>
+                    `;
+                    card.onclick = () => {
+                        playSound('click');
+                        currentGallery = list;
+                        galleryIndex = index;
+                        galleryFolder = 'homenagens';
+                        document.getElementById('gallery-title-text').innerText = item.name || 'Galeria de Homenagens';
+                        updateGalleryUI();
+                        galleryOverlay.classList.add('active');
+                    };
+                    tributesGrid.appendChild(card);
+                });
+            }
+
+            tributesOverlay.classList.add('active');
+        }
+
+        document.getElementById('btn-tributes').addEventListener('click', openTributesModal);
+        document.getElementById('btn-close-tributes').addEventListener('click', () => {
+            tributesOverlay.classList.remove('active');
+            playSound('close');
+        });
+        tributesOverlay.addEventListener('click', (e) => {
+            if (e.target === tributesOverlay) {
+                tributesOverlay.classList.remove('active');
+                playSound('close');
+            }
+        });
+
+        // =========================================================================
+        // 8. MOTOR DE MAPA UNMINED + LEAFLET
+        // =========================================================================
+        let map;
+        let currentDimension = 'overworld';
+        let currentTileLayer = null;
+        let globalMapBounds = null;
+        let currentMinZoom = -6;
+        let currentMaxZoom = 2;
+        let loadedMarkers = [];
+        let pinsLayer = L.layerGroup();
+        let labelsLayer = L.layerGroup();
+        let drawingsByDim = {
+            overworld: L.featureGroup(),
+            nether: L.featureGroup(),
+            end: L.featureGroup()
+        };
+        let gridLayer = L.layerGroup();
+        const cursorCoords = document.getElementById('cursor-coords');
+
+        function mcToLatLng(mcX, mcZ) {
+            return L.latLng(-mcZ, mcX);
+        }
+
+        function latLngToMc(latlng) {
+            return {
+                x: Math.round(latlng.lng),
+                z: Math.round(-latlng.lat)
+            };
+        }
+
+        const UnminedTileLayer = L.TileLayer.extend({
+            getTileUrl: function(coords) {
+                const z = coords.z;
+                const x = coords.x;
+                const y = coords.y;
+                const xd = Math.floor(x / 10);
+                const yd = Math.floor(y / 10);
+                const format = this.options.imageFormat || 'jpeg';
+                const dim = this.options.dimension || 'overworld';
+                return `./${dim}/tiles/zoom.${z}/${xd}/${yd}/tile.${x}.${y}.${format}`;
+            }
+        });
+
+        function loadScriptOptional(src) {
+            return new Promise((resolve) => {
+                const s = document.createElement('script');
+                s.src = src + '?v=' + Date.now();
+                s.onload = () => { s.remove(); resolve(true); };
+                s.onerror = () => { s.remove(); resolve(false); };
+                document.head.appendChild(s);
+            });
+        }
+
+        async function loadDimensionData(dim) {
+            window.UnminedMapProperties = undefined;
+            window.UnminedCustomMarkers = undefined;
+            window.UnminedPlayers = undefined;
+
+            await loadScriptOptional(`./${dim}/unmined.map.properties.js`);
+            await loadScriptOptional(`./${dim}/custom.markers.js`);
+            await loadScriptOptional(`./${dim}/unmined.map.players.js`);
+
+            const props = window.UnminedMapProperties || {
+                minZoom: -6,
+                maxZoom: 2,
+                defaultZoom: 0,
+                imageFormat: 'jpeg',
+                minRegionX: -8,
+                minRegionZ: -8,
+                maxRegionX: 8,
+                maxRegionZ: 8,
+                worldName: dim.toUpperCase(),
+                background: '#09090b',
+                markers: []
+            };
+
+            const customMarkers = (window.UnminedCustomMarkers && window.UnminedCustomMarkers.isEnabled && window.UnminedCustomMarkers.markers)
+                ? window.UnminedCustomMarkers.markers
+                : [];
+
+            const players = (window.UnminedPlayers && Array.isArray(window.UnminedPlayers))
+                ? window.UnminedPlayers
+                : [];
+
+            return { props, customMarkers, players };
+        }
+
+        async function switchDimension(dim) {
+            currentDimension = dim;
+
+            document.querySelectorAll('.dim-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-dim') === dim);
+            });
+
+            await fetchInitialDataFiles();
+            const { props, customMarkers, players } = await loadDimensionData(dim);
+
+            currentMinZoom = props.minZoom !== undefined ? props.minZoom : -6;
+            currentMaxZoom = props.maxZoom !== undefined ? props.maxZoom : 2;
+
+            const minX = (props.minRegionX !== undefined ? props.minRegionX : -8) * 512;
+            const minZ = (props.minRegionZ !== undefined ? props.minRegionZ : -8) * 512;
+            const maxX = ((props.maxRegionX !== undefined ? props.maxRegionX : 8) + 1) * 512;
+            const maxZ = ((props.maxRegionZ !== undefined ? props.maxRegionZ : 8) + 1) * 512;
+
+            globalMapBounds = L.latLngBounds(
+                mcToLatLng(minX, maxZ),
+                mcToLatLng(maxX, minZ)
+            );
+
+            document.getElementById('map').style.background = props.background || '#09090b';
+
+            map.setMinZoom(currentMinZoom - 1);
+            map.setMaxZoom(currentMaxZoom + 2);
+            map.setMaxBounds(globalMapBounds.pad(0.25));
+
+            if (currentTileLayer) {
+                map.removeLayer(currentTileLayer);
+            }
+
+            currentTileLayer = new UnminedTileLayer('', {
+                dimension: dim,
+                imageFormat: props.imageFormat || 'jpeg',
+                tileSize: 256,
+                minZoom: currentMinZoom - 1,
+                maxZoom: currentMaxZoom + 2,
+                minNativeZoom: currentMinZoom,
+                maxNativeZoom: currentMaxZoom,
+                bounds: globalMapBounds,
+                noWrap: true,
+                errorTileUrl: 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7'
+            }).addTo(map);
+
+            Object.keys(drawingsByDim).forEach(d => {
+                if (map.hasLayer(drawingsByDim[d])) map.removeLayer(drawingsByDim[d]);
+            });
+            if (document.getElementById('toggle-drawings').checked) {
+                map.addLayer(drawingsByDim[dim]);
+            }
+
+            gridLayer.clearLayers();
+            const step = 1000;
+            const startX = Math.floor(minX / step) * step;
+            const endX = Math.ceil(maxX / step) * step;
+            const startZ = Math.floor(minZ / step) * step;
+            const endZ = Math.ceil(maxZ / step) * step;
+
+            for (let x = startX; x <= endX; x += step) {
+                L.polyline([mcToLatLng(x, startZ), mcToLatLng(x, endZ)], { color: 'rgba(255,255,255,0.1)', weight: 1, interactive: false }).addTo(gridLayer);
+            }
+            for (let z = startZ; z <= endZ; z += step) {
+                L.polyline([mcToLatLng(startX, z), mcToLatLng(endX, z)], { color: 'rgba(255,255,255,0.1)', weight: 1, interactive: false }).addTo(gridLayer);
+            }
+
+            map.setView(mcToLatLng(0, 0), props.defaultZoom !== undefined ? props.defaultZoom : 0);
+
+            const combined = [];
+
+            if (Array.isArray(externalMarkersData)) {
+                externalMarkersData.forEach(m => {
+                    const mDim = (m.dimension || 'overworld').toLowerCase();
+                    if (mDim === dim) combined.push(m);
+                });
+            } else if (externalMarkersData && Array.isArray(externalMarkersData[dim])) {
+                externalMarkersData[dim].forEach(m => combined.push(m));
+            }
+
+            if (Array.isArray(props.markers)) {
+                props.markers.forEach(m => {
+                    if (m && m.x !== undefined && m.z !== undefined) {
+                        combined.push({
+                            name: m.text || 'Local',
+                            x: m.x,
+                            z: m.z,
+                            type: m.type || 'marcador',
+                            image: m.image
+                        });
+                    }
+                });
+            }
+
+            customMarkers.forEach(m => {
+                if (m && m.x !== undefined && m.z !== undefined) {
+                    combined.push({
+                        name: m.text || m.name || 'Ponto de Interesse',
+                        x: m.x,
+                        z: m.z,
+                        type: m.type || 'custom',
+                        image: m.image,
+                        gallery: m.gallery
+                    });
+                }
+            });
+
+            players.forEach(p => {
+                if (p && p.x !== undefined && p.z !== undefined) {
+                    combined.push({
+                        name: p.name || 'Jogador',
+                        x: p.x,
+                        z: p.z,
+                        type: 'jogador'
+                    });
+                }
+            });
+
+            loadedMarkers = combined;
+            buildFilterMenu();
+            applyFilter('all', 'Todos');
+        }
+
+        async function initApp() {
+            loadSettings();
+
+            map = L.map('map', {
+                crs: L.CRS.Simple,
+                minZoom: -7,
+                maxZoom: 4,
+                zoomControl: window.innerWidth > 768,
+                preferCanvas: true
+            });
+
+            if (document.getElementById('toggle-markers').checked) map.addLayer(pinsLayer); 
+            if (document.getElementById('toggle-labels').checked) map.addLayer(labelsLayer); 
+            if (document.getElementById('toggle-grid').checked) map.addLayer(gridLayer);
+
+            document.getElementById('toggle-grid').addEventListener('change', e => {
+                e.target.checked ? map.addLayer(gridLayer) : map.removeLayer(gridLayer);
+            });
+
+            document.getElementById('btn-reset-view').addEventListener('click', () => {
+                playSound('click');
+                if (globalMapBounds) {
+                    map.flyToBounds(globalMapBounds, { duration: 1.2, easeLinearity: 0.25 });
+                }
+            });
+
+            map.on('mousemove', (e) => {
+                if (window.innerWidth > 768) {
+                    const mc = latLngToMc(e.latlng);
+                    cursorCoords.innerHTML = `X: ${mc.x} | Z: ${mc.z}`;
+                    cursorCoords.style.left = e.originalEvent.clientX + 'px';
+                    cursorCoords.style.top = e.originalEvent.clientY + 'px';
+                    cursorCoords.style.display = 'block';
+                }
+            });
+            map.on('mouseout', () => cursorCoords.style.display = 'none');
+
+            document.querySelectorAll('.dim-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const targetDim = btn.getAttribute('data-dim');
+                    if (targetDim !== currentDimension) {
+                        playSound('click');
+                        switchDimension(targetDim);
+                    }
+                });
+            });
+
+            setupDrawingTools();
+            await switchDimension('overworld');
+        }
+
+        // =========================================================================
+        // 9. DESENHO VETORIAL E MEDIÇÃO
+        // =========================================================================
+        function setupDrawingTools() {
+            let currentTool = 'idle', isDrawing = false, currentShape = null, startLatLng = null, measureTooltip = null;
+            const buttons = document.querySelectorAll('.draw-btn[data-tool]');
+            const statusText = document.getElementById('draw-status-text');
+            const mapContainer = document.getElementById('map');
+
+            function getActiveDrawLayer() {
+                return drawingsByDim[currentDimension];
+            }
+
+            function applyZoomLock() {
+                if (document.getElementById('toggle-zoom-lock').checked) {
+                    map.dragging.disable(); map.touchZoom.disable(); map.doubleClickZoom.disable(); map.scrollWheelZoom.disable();
+                    const zControl = document.querySelector('.leaflet-control-zoom');
+                    if (zControl) zControl.style.display = 'none';
+                } else {
+                    if (currentTool === 'idle') map.dragging.enable();
+                    map.touchZoom.enable(); map.doubleClickZoom.enable(); map.scrollWheelZoom.enable();
+                    const zControl = document.querySelector('.leaflet-control-zoom');
+                    if (zControl && window.innerWidth > 768) zControl.style.display = 'block';
+                }
+            }
+            applyZoomLock();
+            document.getElementById('toggle-zoom-lock').addEventListener('change', applyZoomLock);
+
+            buttons.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    playSound('click');
+                    const tool = btn.getAttribute('data-tool');
+                    if (currentTool === tool) {
+                        currentTool = 'idle';
+                        btn.classList.remove('active');
+                        mapContainer.classList.remove('crosshair-cursor-enabled');
+                        statusText.innerText = '';
+                        applyZoomLock();
+                    } else {
+                        buttons.forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        currentTool = tool;
+                        map.dragging.disable();
+                        mapContainer.classList.add('crosshair-cursor-enabled');
+                        const msgs = {
+                            'freehand': 'Desenho Livre ativado.',
+                            'measure': 'Arraste para medir distância.',
+                            'rectangle': 'Arraste para criar área.',
+                            'circle': 'Arraste para criar raio.'
+                        };
+                        statusText.innerText = msgs[tool];
+                    }
+                });
+            });
+
+            document.getElementById('btn-clear-draw').addEventListener('click', () => {
+                getActiveDrawLayer().clearLayers();
+                playSound('clear');
+            });
+
+            document.getElementById('toggle-drawings').addEventListener('change', (e) => {
+                e.target.checked ? map.addLayer(getActiveDrawLayer()) : map.removeLayer(getActiveDrawLayer());
+            });
+
+            function abortDrawing() {
+                if (isDrawing) {
+                    isDrawing = false;
+                    if (currentShape) getActiveDrawLayer().removeLayer(currentShape);
+                    if (measureTooltip) map.removeLayer(measureTooltip);
+                    currentShape = null;
+                    measureTooltip = null;
+                }
+            }
+
+            function handleDrawStart(latlng) {
+                if (currentTool === 'idle') return;
+                isDrawing = true;
+                startLatLng = latlng;
+                const layer = getActiveDrawLayer();
+
+                if (currentTool === 'freehand') {
+                    currentShape = L.polyline([startLatLng], { color: '#ffffff', weight: 4, lineCap: 'round', lineJoin: 'round', interactive: false }).addTo(layer);
+                } else if (currentTool === 'measure') {
+                    currentShape = L.polyline([startLatLng, startLatLng], { color: '#38bdf8', weight: 4, dashArray: '5, 10', interactive: false }).addTo(layer);
+                    measureTooltip = L.tooltip({ permanent: true, className: 'measure-tooltip', direction: 'center', interactive: false }).setLatLng(startLatLng).setContent('0 blocos').addTo(map);
+                } else if (currentTool === 'rectangle') {
+                    currentShape = L.rectangle(L.latLngBounds(startLatLng, L.latLng(startLatLng.lat + 0.1, startLatLng.lng + 0.1)), { color: '#facc15', weight: 3, fillOpacity: 0.15, interactive: false }).addTo(layer);
+                } else if (currentTool === 'circle') {
+                    currentShape = L.circle(startLatLng, { radius: 1, color: '#f472b6', weight: 3, fillOpacity: 0.15, interactive: false }).addTo(layer);
+                }
+            }
+
+            function handleDrawMove(latlng) {
+                if (!isDrawing || !currentShape) return;
+                if (currentTool === 'freehand') {
+                    currentShape.addLatLng(latlng);
+                } else if (currentTool === 'measure') {
+                    currentShape.setLatLngs([startLatLng, latlng]);
+                    const dist = Math.round(Math.hypot(latLngToMc(latlng).x - latLngToMc(startLatLng).x, latLngToMc(latlng).z - latLngToMc(startLatLng).z));
+                    measureTooltip.setLatLng(latlng).setContent(`${dist} blocos`);
+                } else if (currentTool === 'rectangle') {
+                    currentShape.setBounds(L.latLngBounds(startLatLng, latlng));
+                } else if (currentTool === 'circle') {
+                    currentShape.setRadius(Math.hypot(latlng.lng - startLatLng.lng, latlng.lat - startLatLng.lat));
+                }
+            }
+
+            function handleDrawEnd() {
+                if (!isDrawing) return;
+                isDrawing = false;
+                if (currentTool === 'measure' && measureTooltip) {
+                    map.removeLayer(measureTooltip);
+                    if (currentShape) {
+                        const pts = currentShape.getLatLngs();
+                        const dist = Math.round(Math.hypot(latLngToMc(pts[1]).x - latLngToMc(startLatLng).x, latLngToMc(pts[1]).z - latLngToMc(startLatLng).z));
+                        L.marker(pts[1], { icon: L.divIcon({ className: 'invisible-icon', html: '' }), interactive: false })
+                            .addTo(getActiveDrawLayer())
+                            .bindTooltip(`${dist} blocos`, { permanent: true, className: 'measure-tooltip', direction: 'top' })
+                            .openTooltip();
+                    }
+                    measureTooltip = null;
+                }
+                currentShape = null;
+            }
+
+            map.on('mousedown', e => handleDrawStart(e.latlng));
+            map.on('mousemove', e => handleDrawMove(e.latlng));
+            map.on('mouseup', handleDrawEnd);
+
+            mapContainer.addEventListener('touchstart', (e) => {
+                if (currentTool !== 'idle') {
+                    if (e.touches.length > 1) { abortDrawing(); return; }
+                    if (e.cancelable && e.touches.length === 1) e.preventDefault();
+                    handleDrawStart(map.mouseEventToLatLng(e.touches[0]));
+                }
+            }, { passive: false });
+
+            mapContainer.addEventListener('touchmove', (e) => {
+                if (currentTool !== 'idle') {
+                    if (e.touches.length > 1) { abortDrawing(); return; }
+                    if (isDrawing) {
+                        if (e.cancelable) e.preventDefault();
+                        handleDrawMove(map.mouseEventToLatLng(e.touches[0]));
+                    }
+                }
+            }, { passive: false });
+
+            mapContainer.addEventListener('touchend', () => {
+                if (currentTool !== 'idle') handleDrawEnd();
+            });
+        }
+
+        // =========================================================================
+        // 10. RENDERIZAÇÃO DE ÍCONES E FILTROS DINÂMICOS
+        // =========================================================================
+        function getCustomIcon(m) {
+            const src = resolveMarkerIconUrl(m);
+            return L.divIcon({
+                className: '',
+                html: `<img src="${src}" class="scalable-icon" style="width:32px; height:32px; display:block; object-fit:contain;" onerror="this.src='https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png'">`,
+                iconSize: [32, 32],
+                iconAnchor: [16, 32]
+            });
+        }
+
+        function buildFilterMenu() {
+            const filterMenu = document.getElementById('filter-dropdown-menu');
+            filterMenu.innerHTML = '';
+
+            const allOption = document.createElement('div');
+            allOption.className = 'filter-option selected';
+            allOption.setAttribute('data-value', 'all');
+            allOption.innerHTML = `
+                <span class="filter-name">Todos os locais</span>
+                <span class="material-symbols-outlined" style="font-size: 18px; opacity: 0.8;">public</span>
+            `;
+            allOption.onclick = () => { applyFilter('all', 'Todos'); playSound('click'); };
+            filterMenu.appendChild(allOption);
+
+            const types = [...new Set(loadedMarkers.map(m => m.type || 'padrão'))];
+            types.forEach(type => {
+                const readableName = formatReadableName(type);
+                const sampleMarker = loadedMarkers.find(m => (m.type || 'padrão') === type) || { type };
+                const iconSrc = resolveMarkerIconUrl(sampleMarker);
+                
+                const div = document.createElement('div');
+                div.className = 'filter-option';
+                div.setAttribute('data-value', type);
+                div.innerHTML = `
+                    <span class="filter-name">${readableName}</span>
+                    <img src="${iconSrc}" alt="${readableName}" onerror="this.src='https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png'">
+                `;
+                div.onclick = () => { applyFilter(type, readableName); playSound('click'); };
+                filterMenu.appendChild(div);
+            });
+        }
+
+        function renderFilteredMarkers(filterValue) {
+            pinsLayer.clearLayers(); 
+            labelsLayer.clearLayers();
+            
+            loadedMarkers.forEach(m => {
+                const mType = m.type || 'padrão';
+                if (filterValue !== 'all' && mType !== filterValue) return;
+
+                const latlng = mcToLatLng(m.x, m.z);
+                let popupHtml = `<div style="font-family:'Inter'; text-align:center;"><b>${m.name}</b><br><span style="color:#666; font-size:12px;">X: ${m.x}, Z: ${m.z}</span>`;
+                if (m.gallery) {
+                    popupHtml += `<br><button class="btn-gallery" onclick="window.openGallery('${m.name.replace(/'/g, "\\'")}', '${m.gallery}')"><span class="material-symbols-outlined" style="font-size:16px;">photo_library</span> Ver Galeria</button>`;
+                }
+                popupHtml += `</div>`;
+
+                L.marker(latlng, { icon: getCustomIcon(m) }).bindPopup(popupHtml).addTo(pinsLayer);
+                
+                const labelIcon = L.divIcon({
+                    className: 'map-label-container',
+                    html: `<div class="map-label-text">${m.name}</div>`,
+                    iconSize: [200, 20],
+                    iconAnchor: [100, -5]
+                });
+                L.marker(latlng, { icon: labelIcon, interactive: false }).addTo(labelsLayer);
+            });
+            
+            if (!document.getElementById('toggle-markers').checked) map.removeLayer(pinsLayer);
+            if (!document.getElementById('toggle-labels').checked) map.removeLayer(labelsLayer);
+        }
+
+        document.getElementById('toggle-markers').addEventListener('change', e => e.target.checked ? map.addLayer(pinsLayer) : map.removeLayer(pinsLayer));
+        document.getElementById('toggle-labels').addEventListener('change', e => e.target.checked ? map.addLayer(labelsLayer) : map.removeLayer(labelsLayer));
+
+        initApp();
+    </script>
 </body>
 </html>

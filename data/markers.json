@@ -1,0 +1,66 @@
+[
+  {
+    "id": 1,
+    "name": "ponto zero",
+    "x": 0,
+    "z": 0,
+    "type": "spawn",
+    "gallery": "spawn"
+  },
+  {
+    "id": 2,
+    "name": "Nova Ribeiro",
+    "x": 19736,
+    "z": 6280,
+    "type": "rock",
+    "gallery": "novaribeiro"
+  },
+  {
+    "id": 3,
+    "name": "Sayuri",
+    "x": -232,
+    "z": 800,
+    "type": "fish_cake",
+    "gallery": "sayuri"
+  },
+  {
+    "id": 4,
+    "name": "Alteia",
+    "x": -352,
+    "z": -104,
+    "type": "trident",
+    "gallery": "alteia"
+  },
+  {
+    "id": 5,
+    "name": "Montain Lake",
+    "x": -304,
+    "z": -1536,
+    "type": "snowflake",
+    "gallery": "montainlake"
+  },
+  {
+    "id": 6,
+    "name": "Dragon city",
+    "x": -3744,
+    "z": -328,
+    "type": "dragon",
+    "gallery": "dragoncity"
+  },
+  {
+    "id": 7,
+    "name": "Cherry field",
+    "x": 4568,
+    "z": -1408,
+    "type": "cherry_blossom",
+    "gallery": "cherryfield"
+  },
+  {
+    "id": 8,
+    "name": "Camelot",
+    "x": -1736,
+    "z": -24,
+    "type": "eggplant",
+    "gallery": "camelot"
+  }
+]
