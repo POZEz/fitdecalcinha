@@ -330,9 +330,9 @@
         }
         .fitfc-banner {
             width: 100%;
-            border-radius: 8px;
+            border-radius: 10px;
             overflow: hidden;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             border: 1px solid rgba(255,255,255,0.08);
             background: rgba(18, 18, 20, 0.6);
             cursor: pointer;
@@ -340,11 +340,10 @@
         }
         .fitfc-banner img {
             width: 100%;
-            height: auto;
-            max-height: 220px;
-            object-fit: contain;
+            height: clamp(200px, 34vh, 380px);
+            object-fit: cover;
+            object-position: center;
             display: block;
-            margin: 0 auto;
         }
         .masonry-grid {
             column-count: 4;
@@ -1041,7 +1040,12 @@
         let searchTimeout;
 
         function getMarkerType(m) {
-            const raw = m.type || m.tipo || m.gallery || '';
+            const raw = m.type || m.tipo || '';
+            return String(raw).replace(/\.png$/i, '').trim();
+        }
+
+        function getMarkerGallery(m) {
+            const raw = m.gallery || m.galeria || '';
             return String(raw).replace(/\.png$/i, '').trim();
         }
 
@@ -1153,7 +1157,7 @@
         });
 
         // =========================================================================
-        // 6. SISTEMA DE GALERIA DOS MARCADORES (static/galeria/<type>/<exemplo>.png)
+        // 6. SISTEMA DE GALERIA DOS MARCADORES (static/galeria/<gallery>/<exemplo>.png)
         // =========================================================================
         let currentGallery = [];
         let galleryIndex = 0;
@@ -1189,14 +1193,14 @@
             return '';
         }
 
-        async function resolveActualGaleriaSubfolder(typeName) {
-            const cleanType = String(typeName || '').replace(/\.png$/i, '').trim();
-            if (!cleanType) return '';
+        async function resolveActualGaleriaSubfolder(galleryName) {
+            const cleanGallery = String(galleryName || '').replace(/\.png$/i, '').trim();
+            if (!cleanGallery) return '';
 
             // Verifica se na árvore do GitHub ou no servidor existe pasta com case diferente
             const tree = await getGitHubRepoTree();
             if (Array.isArray(tree)) {
-                const targetPrefix = `static/galeria/${cleanType.toLowerCase()}/`;
+                const targetPrefix = `static/galeria/${cleanGallery.toLowerCase()}/`;
                 const match = tree.find(n => typeof n.path === 'string' && n.path.toLowerCase().startsWith(targetPrefix));
                 if (match) {
                     const parts = match.path.split('/');
@@ -1204,29 +1208,29 @@
                 }
             }
 
-            return `static/galeria/${cleanType}`;
+            return `static/galeria/${cleanGallery}`;
         }
 
-        async function resolveMarkerTypeImages(typeName, fallbackGalleryName = '') {
-            const folderPath = await resolveActualGaleriaSubfolder(typeName);
+        async function resolveMarkerGalleryImages(galleryName, fallbackTypeName = '') {
+            const folderPath = await resolveActualGaleriaSubfolder(galleryName);
             if (!folderPath) return [];
 
-            // 1. Tenta listagem dinâmica da pasta static/galeria/<type>/ (JSON, HTML autoindex, GitHub Tree/API, index.json)
+            // 1. Tenta listagem dinâmica da pasta static/galeria/<gallery>/ (JSON, HTML autoindex, GitHub Tree/API, index.json)
             let files = await listDirectoryFiles(folderPath, ['.png', '.jpg', '.jpeg', '.webp'], true);
-            if (files.length === 0 && fallbackGalleryName && fallbackGalleryName !== typeName) {
-                const altFolder = await resolveActualGaleriaSubfolder(fallbackGalleryName);
+            if (files.length === 0 && fallbackTypeName && fallbackTypeName !== galleryName) {
+                const altFolder = await resolveActualGaleriaSubfolder(fallbackTypeName);
                 files = await listDirectoryFiles(altFolder, ['.png', '.jpg', '.jpeg', '.webp'], true);
             }
             if (files.length > 0) {
                 return files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
             }
 
-            // 2. Verifica se existe mapeamento em data/prints.json para esse type (case-insensitive)
+            // 2. Verifica se existe mapeamento em data/prints.json para esse gallery (case-insensitive)
             const printsData = await loadOptionalPrintsJson();
             if (printsData && typeof printsData === 'object') {
                 const matchingKey = Object.keys(printsData).find(k =>
-                    k.toLowerCase() === String(typeName).toLowerCase() ||
-                    (fallbackGalleryName && k.toLowerCase() === String(fallbackGalleryName).toLowerCase())
+                    k.toLowerCase() === String(galleryName).toLowerCase() ||
+                    (fallbackTypeName && k.toLowerCase() === String(fallbackTypeName).toLowerCase())
                 );
                 if (matchingKey && Array.isArray(printsData[matchingKey]) && printsData[matchingKey].length > 0) {
                     return printsData[matchingKey].map(item => {
@@ -1247,14 +1251,14 @@
                 }
             }
 
-            // 3. Fallback de sondagem por nomes comuns de PNG dentro de static/galeria/<type>/
-            const cleanType = String(typeName).replace(/\.png$/i, '').trim();
+            // 3. Fallback de sondagem por nomes comuns de PNG dentro de static/galeria/<gallery>/
+            const cleanGallery = String(galleryName).replace(/\.png$/i, '').trim();
             const candidates = [
                 'exemplo.png', 'exemplo1.png', 'exemplo2.png',
-                `${cleanType}.png`,
+                `${cleanGallery}.png`,
                 ...Array.from({ length: 20 }, (_, i) => `${i + 1}.png`),
-                ...Array.from({ length: 15 }, (_, i) => `${cleanType}${i + 1}.png`),
-                ...Array.from({ length: 12 }, (_, i) => `${cleanType}_${i + 1}.png`),
+                ...Array.from({ length: 15 }, (_, i) => `${cleanGallery}${i + 1}.png`),
+                ...Array.from({ length: 12 }, (_, i) => `${cleanGallery}_${i + 1}.png`),
                 ...Array.from({ length: 10 }, (_, i) => `0${i + 1}.png`),
                 ...Array.from({ length: 10 }, (_, i) => `print${i + 1}.png`),
                 ...Array.from({ length: 10 }, (_, i) => `foto${i + 1}.png`),
@@ -1281,14 +1285,15 @@
             galleryOverlay.classList.add('active');
         }
 
-        window.openGallery = async function(title, typeName, fallbackGallery = '') {
+        window.openGallery = async function(title, galleryName, fallbackType = '') {
             playSound('open');
-            if (!typeName && !fallbackGallery) {
+            const targetGallery = galleryName || fallbackType;
+            if (!targetGallery) {
                 return;
             }
 
-            const images = await resolveMarkerTypeImages(typeName || fallbackGallery, fallbackGallery);
-            const baseFolder = `static/galeria/${typeName || fallbackGallery}`;
+            const images = await resolveMarkerGalleryImages(targetGallery, fallbackType);
+            const baseFolder = `static/galeria/${targetGallery}`;
 
             markerMasonryTitle.innerText = title || 'Galeria';
             markerMasonryGrid.innerHTML = '';
@@ -1631,6 +1636,7 @@
                         const markerObj = {
                             ...m,
                             type: getMarkerType(m),
+                            gallery: getMarkerGallery(m),
                             category: categoryKey,
                             categoryName: categoryName
                         };
@@ -1966,14 +1972,14 @@
 
                 const latlng = mcToLatLng(m.x, m.z);
                 const mType = getMarkerType(m);
-                const mGallery = String(m.gallery || '').replace(/\.png$/i, '').trim();
+                const mGallery = getMarkerGallery(m);
                 const safeName = (m.name || 'Local').replace(/'/g, "\\'");
-                const safeType = mType.replace(/'/g, "\\'");
                 const safeGallery = mGallery.replace(/'/g, "\\'");
+                const safeType = mType.replace(/'/g, "\\'");
 
                 let popupHtml = `<div style="font-family:'Inter'; text-align:center;"><b>${m.name}</b><br><span style="color:#666; font-size:12px;">X: ${m.x}, Z: ${m.z}</span>`;
-                if (mType || mGallery) {
-                    popupHtml += `<br><button class="btn-gallery" onclick="window.openGallery('${safeName}', '${safeType}', '${safeGallery}')"><span class="material-symbols-outlined" style="font-size:16px;">photo_library</span> Ver Galeria</button>`;
+                if (mGallery || mType) {
+                    popupHtml += `<br><button class="btn-gallery" onclick="window.openGallery('${safeName}', '${safeGallery}', '${safeType}')"><span class="material-symbols-outlined" style="font-size:16px;">photo_library</span> Ver Galeria</button>`;
                 }
                 popupHtml += `</div>`;
 
