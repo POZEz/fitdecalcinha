@@ -52,7 +52,8 @@
 
         /* === SELETOR DE DIMENSÕES (Dentro de Configurações) === */
         .dimension-tabs {
-            display: flex;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
             width: 100%;
             box-sizing: border-box;
             background: rgba(0, 0, 0, 0.35);
@@ -63,24 +64,34 @@
             box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.6);
         }
         .dim-btn {
-            flex: 1;
+            min-width: 0;
+            width: 100%;
+            box-sizing: border-box;
             justify-content: center;
             background: transparent;
             border: 1px solid transparent;
             color: var(--text-muted);
-            padding: 7px 6px;
+            padding: 6px 4px;
             border-radius: 6px;
-            font-size: 12px;
+            font-size: 11px;
             font-weight: 500;
             cursor: pointer;
             font-family: 'Inter', sans-serif;
             transition: background 0.15s ease, color 0.15s ease;
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             white-space: nowrap;
+            overflow: hidden;
         }
-        .dim-btn .material-symbols-outlined { font-size: 15px; }
+        .dim-btn .material-symbols-outlined {
+            font-size: 14px;
+            flex-shrink: 0;
+        }
+        .dim-btn span:last-child {
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
         .dim-btn:hover:not(.active) {
             color: var(--text-main);
             background: rgba(255, 255, 255, 0.04);
@@ -163,8 +174,10 @@
             border: 1px solid rgba(255,255,255,0.08); border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.5); z-index: 2002;
             display: none; flex-direction: column; padding: 6px; gap: 2px;
-            max-height: 60vh; overflow-y: auto;
+            max-height: 60vh; overflow-y: auto; overflow-x: hidden;
+            scrollbar-width: none; -ms-overflow-style: none;
         }
+        #filter-dropdown-menu::-webkit-scrollbar { display: none; }
         #filter-dropdown-menu.active { display: flex; }
         
         .filter-option {
@@ -225,20 +238,22 @@
         .close-modal-btn:hover { color: white; }
         
         #ui-panel { 
-            position: absolute; top: 70px; right: 15px; z-index: 2000; width: 290px; max-width: calc(100vw - 30px); 
-            max-height: calc(100vh - 85px); overflow-y: auto;
-            background: var(--bg-panel); backdrop-filter: blur(16px); border-radius: 12px; padding: 20px; 
+            position: absolute; top: 68px; right: 15px; z-index: 2000; width: 284px; max-width: calc(100vw - 24px); 
+            max-height: calc(100vh - 80px); overflow-y: auto; overflow-x: hidden;
+            scrollbar-width: none; -ms-overflow-style: none;
+            background: var(--bg-panel); backdrop-filter: blur(16px); border-radius: 12px; padding: 14px 16px; 
             border: 1px solid rgba(255,255,255,0.05); box-shadow: 0 10px 40px rgba(0,0,0,0.5); 
             transform: translateX(calc(100% + 50px)); transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1); box-sizing: border-box; 
         }
+        #ui-panel::-webkit-scrollbar { display: none; }
         #ui-panel.active { transform: translateX(0); }
-        .panel-section { margin-bottom: 20px; }
-        .panel-section h3 { margin: 0 0 12px 0; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: #666; }
+        .panel-section { margin-bottom: 12px; }
+        .panel-section h3 { margin: 0 0 8px 0; font-size: 10.5px; text-transform: uppercase; letter-spacing: 1px; color: #71717a; }
         
-        .draw-toolbar { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 10px; }
+        .draw-toolbar { display: flex; gap: 6px; justify-content: space-between; margin-bottom: 4px; }
         .draw-btn {
             position: relative; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-muted); border-radius: 6px; width: 40px; height: 40px;
+            color: var(--text-muted); border-radius: 6px; width: 36px; height: 34px;
             display: flex; align-items: center; justify-content: center; cursor: pointer;
             transition: 0.15s; flex: 1;
         }
@@ -246,104 +261,133 @@
         .draw-btn.active { background: var(--primary); color: var(--primary-text); border-color: var(--primary); }
         .draw-btn.danger { background: rgba(239, 68, 68, 0.1); color: #ef4444; border-color: rgba(239, 68, 68, 0.2); }
         .draw-btn.danger:hover { background: #ef4444; color: white; }
-        .draw-status { font-size: 12px; color: var(--primary); text-align: center; margin-top: 5px; min-height: 15px; font-weight: 500; }
+        .draw-status { font-size: 11px; color: var(--primary); text-align: center; margin-top: 2px; min-height: 0; font-weight: 500; }
         
-        .control-row { margin-bottom: 10px; display: flex; align-items: center; font-size: 13px; cursor: pointer; color: var(--text-muted); transition: color 0.2s; }
+        .control-row { margin-bottom: 6px; display: flex; align-items: center; font-size: 12.5px; cursor: pointer; color: var(--text-muted); transition: color 0.2s; }
+        .control-row:last-child { margin-bottom: 0; }
         .control-row:hover { color: var(--text-main); }
-        .control-row input[type="checkbox"] { appearance: none; width: 18px; height: 18px; border: 1.5px solid #666; border-radius: 4px; margin-right: 12px; outline: none; cursor: pointer; transition: all 0.2s; background: transparent; position: relative; }
+        .control-row input[type="checkbox"] { appearance: none; width: 16px; height: 16px; border: 1.5px solid #666; border-radius: 4px; margin-right: 10px; outline: none; cursor: pointer; transition: all 0.2s; background: transparent; position: relative; flex-shrink: 0; }
         .control-row input[type="checkbox"]:checked { background: var(--primary); border-color: var(--primary); }
-        .control-row input[type="checkbox"]:checked::after { content: ''; position: absolute; top: 1px; left: 5px; width: 3px; height: 8px; border: solid var(--primary-text); border-width: 0 2px 2px 0; transform: rotate(45deg); }
+        .control-row input[type="checkbox"]:checked::after { content: ''; position: absolute; top: 1px; left: 4px; width: 3px; height: 7px; border: solid var(--primary-text); border-width: 0 2px 2px 0; transform: rotate(45deg); }
         
-        .slider-wrapper { margin-bottom: 10px; }
-        .slider-wrapper label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; color: var(--text-muted); }
-        input[type="range"] { width: 100%; appearance: none; height: 2px; background: rgba(255,255,255,0.1); border-radius: 2px; outline: none; }
-        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--primary); cursor: pointer; transition: 0.15s; }
+        .slider-wrapper { margin-bottom: 6px; }
+        .slider-wrapper:last-child { margin-bottom: 0; }
+        .slider-wrapper label { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 4px; color: var(--text-muted); }
+        input[type="range"] { width: 100%; appearance: none; height: 2px; background: rgba(255,255,255,0.1); border-radius: 2px; outline: none; display: block; }
+        input[type="range"]::-webkit-slider-thumb { appearance: none; width: 13px; height: 13px; border-radius: 50%; background: var(--primary); cursor: pointer; transition: 0.15s; }
         
         .btn-gallery { width: 100%; padding: 8px; border: none; border-radius: 6px; background: var(--primary); color: var(--primary-text); font-weight: 600; font-family: 'Inter'; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; gap: 8px; font-size: 13px; margin-top: 10px; }
         .btn-gallery:hover { background: #e4e4e7; }
         
         /* === GALERIA LIGHTBOX === */
-        #gallery-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); z-index: 4500; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease; }
+        #gallery-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.95); backdrop-filter: blur(8px); z-index: 4500; display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease; overflow: hidden; }
         #gallery-overlay.active { display: flex; opacity: 1; }
-        .gallery-container { width: 100%; height: 100%; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; }
-        .gallery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; padding: 0 10px; }
+        .gallery-container { width: 100%; height: 100%; display: flex; flex-direction: column; padding: 20px; box-sizing: border-box; overflow: hidden; }
+        .gallery-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 0 10px; flex-shrink: 0; }
         .gallery-title { display: flex; align-items: center; gap: 10px; font-size: 18px; font-weight: 500; }
         .gallery-counter { background: rgba(255,255,255,0.1); padding: 4px 12px; border-radius: 20px; font-size: 13px; font-weight: 600; font-family: monospace; }
-        .gallery-body { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 0; position: relative; }
+        .gallery-body { flex: 1; display: flex; align-items: center; justify-content: space-between; gap: 20px; min-height: 0; position: relative; overflow: hidden; }
         .gallery-main { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; overflow: hidden; gap: 10px; }
-        .gallery-main img { max-width: 100%; max-height: calc(100% - 35px); object-fit: contain; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transition: opacity 0.15s ease; }
+        .gallery-main img { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; border-radius: 8px; box-shadow: 0 10px 40px rgba(0,0,0,0.5); transition: opacity 0.15s ease; }
         .gallery-caption { color: var(--text-muted); font-size: 13px; text-align: center; max-width: 600px; }
-        .gallery-nav { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; padding: 10px; gap: 10px; transition: background 0.15s; min-width: 70px; }
+        .gallery-nav { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05); border-radius: 8px; color: white; cursor: pointer; display: flex; flex-direction: column; align-items: center; padding: 10px; gap: 10px; transition: background 0.15s; min-width: 70px; flex-shrink: 0; }
         .gallery-nav:hover { background: rgba(255,255,255,0.1); }
-        .gallery-nav img { width: 50px; height: 50px; object-fit: cover; border-radius: 4px; opacity: 0.5; }
-        .gallery-close-top { background: rgba(255,255,255,0.08); border: none; color: white; width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; }
+        .gallery-nav img { width: 50px; height: 50px; object-fit: contain; border-radius: 4px; opacity: 0.6; background: rgba(0,0,0,0.3); }
+        .gallery-close-top { background: rgba(255,255,255,0.08); border: none; color: white; width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.15s; flex-shrink: 0; }
         .gallery-close-top:hover { background: rgba(255,255,255,0.16); }
 
-        /* === SEÇÃO FITFC === */
-        #tributes-overlay {
-            position: fixed; inset: 0; background: rgba(9, 9, 11, 0.95); backdrop-filter: blur(12px);
+        /* === GALERIAS MASONRY (FITFC E MARCADORES) === */
+        #tributes-overlay,
+        #marker-masonry-overlay {
+            position: fixed; inset: 0; background: rgba(9, 9, 11, 0.96); backdrop-filter: blur(12px);
             z-index: 4000; display: none; flex-direction: column; opacity: 0; transition: opacity 0.2s ease;
+            overflow: hidden;
         }
-        #tributes-overlay.active { display: flex; opacity: 1; }
+        #tributes-overlay.active,
+        #marker-masonry-overlay.active { display: flex; opacity: 1; }
         .tributes-header {
             display: flex; justify-content: space-between; align-items: center;
-            padding: 16px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);
-            background: var(--bg-panel);
+            padding: 14px 24px; border-bottom: 1px solid rgba(255,255,255,0.06);
+            background: var(--bg-panel); flex-shrink: 0;
         }
         .tributes-title-group { display: flex; align-items: center; gap: 10px; }
         .tributes-title-group h2 { margin: 0; font-size: 16px; font-weight: 600; color: var(--text-main); }
 
         .tributes-grid-wrapper {
-            flex: 1; overflow-y: auto; padding: 24px;
-            max-width: 1200px; width: 100%; margin: 0 auto; box-sizing: border-box;
+            flex: 1;
+            overflow-y: auto;
+            overflow-x: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            padding: 16px 24px;
+            max-width: 1280px;
+            width: 100%;
+            margin: 0 auto;
+            box-sizing: border-box;
+        }
+        .tributes-grid-wrapper::-webkit-scrollbar {
+            display: none;
         }
         .fitfc-banner {
             width: 100%;
-            max-height: 280px;
             border-radius: 8px;
             overflow: hidden;
-            margin-bottom: 20px;
+            margin-bottom: 14px;
             border: 1px solid rgba(255,255,255,0.08);
-            background: #121214;
+            background: rgba(18, 18, 20, 0.6);
             cursor: pointer;
             display: none;
         }
         .fitfc-banner img {
             width: 100%;
-            height: 100%;
-            max-height: 280px;
-            object-fit: cover;
+            height: auto;
+            max-height: 220px;
+            object-fit: contain;
             display: block;
+            margin: 0 auto;
         }
-        .tributes-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 16px;
+        .masonry-grid {
+            column-count: 4;
+            column-gap: 12px;
+            width: 100%;
+            box-sizing: border-box;
         }
-        .tribute-card {
+        .masonry-grid[data-count="1"] {
+            column-count: 1;
+            max-width: 640px;
+            margin: 0 auto;
+        }
+        .masonry-grid[data-count="2"] {
+            column-count: 2;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .masonry-grid[data-count="3"] {
+            column-count: 3;
+        }
+        .masonry-item {
+            break-inside: avoid;
+            -webkit-column-break-inside: avoid;
+            page-break-inside: avoid;
+            margin-bottom: 12px;
             background: #121214;
             border: 1px solid rgba(255,255,255,0.07);
             border-radius: 8px;
             overflow: hidden;
             cursor: pointer;
-            transition: border-color 0.15s ease, background 0.15s ease;
-            display: flex; flex-direction: column;
+            transition: border-color 0.15s ease;
+            display: block;
         }
-        .tribute-card:hover {
-            border-color: rgba(255, 255, 255, 0.2);
-            background: #161618;
+        .masonry-item:hover {
+            border-color: rgba(255, 255, 255, 0.24);
         }
-        .tribute-card-img-wrap {
-            width: 100%; height: 180px; background: #09090b; overflow: hidden;
+        .masonry-item img {
+            width: 100%;
+            height: auto;
+            display: block;
+            object-fit: contain;
         }
-        .tribute-card-img-wrap img {
-            width: 100%; height: 100%; object-fit: cover; display: block;
-        }
-        .tribute-card-body { padding: 12px 14px; display: flex; flex-direction: column; gap: 4px; }
-        .tribute-card-title { font-size: 14px; font-weight: 500; color: var(--text-main); }
-        .tribute-card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.4; }
         .tributes-empty {
-            grid-column: 1 / -1;
             text-align: center;
             color: var(--text-muted);
             font-size: 14px;
@@ -374,6 +418,11 @@
         .leaflet-bar a:hover { background: var(--bg-hover) !important; color: white !important; }
 
         /* === RESPONSIVIDADE & MOBILE === */
+        @media (max-width: 1024px) {
+            .masonry-grid { column-count: 3; column-gap: 10px; }
+            .masonry-item { margin-bottom: 10px; }
+        }
+
         @media (max-width: 768px) {
             #top-bar { padding: 0 10px; gap: 6px; }
             .brand { font-size: 14px; gap: 6px; margin-right: 2px; }
@@ -394,13 +443,17 @@
             .gallery-container { padding: 10px; }
             .gallery-nav img { display: none; } 
             .gallery-nav { min-width: 45px; padding: 15px 5px; }
-            .tributes-header { padding: 14px 16px; }
-            .tributes-grid-wrapper { padding: 16px; }
+            .tributes-header { padding: 12px 16px; }
+            .tributes-grid-wrapper { padding: 12px 14px; }
+            .masonry-grid,
+            .masonry-grid[data-count="3"] { column-count: 2; column-gap: 8px; }
+            .masonry-item { margin-bottom: 8px; }
             .has-tooltip::after { display: none !important; }
         }
 
         @media (max-width: 460px) {
             .brand .text-brand { font-size: 13px; }
+            #ui-panel { right: 8px; width: calc(100vw - 16px); max-width: 284px; padding: 12px 14px; }
         }
     </style>
 </head>
@@ -479,11 +532,27 @@
             <div class="fitfc-banner" id="fitfc-banner">
                 <img id="fitfc-banner-img" src="" alt="FITFC Banner">
             </div>
-            <div class="tributes-grid" id="tributes-grid"></div>
+            <div class="masonry-grid" id="tributes-grid"></div>
         </div>
     </div>
 
-    <!-- Galeria Lightbox (Visualizador de Imagens) -->
+    <!-- Galeria Masonry dos Marcadores -->
+    <div id="marker-masonry-overlay">
+        <div class="tributes-header">
+            <div class="tributes-title-group">
+                <span class="material-symbols-outlined">photo_library</span>
+                <h2 id="marker-masonry-title">Local</h2>
+            </div>
+            <button class="gallery-close-top" id="btn-close-marker-masonry" title="Fechar">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="tributes-grid-wrapper">
+            <div class="masonry-grid" id="marker-masonry-grid"></div>
+        </div>
+    </div>
+
+    <!-- Galeria Lightbox (Visualizador de Imagens em Tela Cheia) -->
     <div id="gallery-overlay">
         <div class="gallery-container">
             <div class="gallery-header">
@@ -579,6 +648,7 @@
         // =========================================================================
         let categorizedMarkersCache = null;
         let externalPrintsData = null;
+        let githubTreeCache = undefined;
 
         const WORD_ACCENTS_MAP = {
             'turisticos': 'Turísticos',
@@ -621,14 +691,39 @@
             const pathParts = window.location.pathname.split('/').filter(Boolean);
             if (host.endsWith('.github.io')) {
                 const owner = host.split('.')[0];
-                const repo = pathParts.length > 0 ? pathParts[0] : `${owner}.github.io`;
+                const firstPart = pathParts[0] || '';
+                const repo = (firstPart && !firstPart.includes('.')) ? firstPart : `${owner}.github.io`;
                 return { owner, repo };
             }
             return null;
         }
 
-        async function listDirectoryFiles(dirPath, extensions = []) {
-            const cleanDir = dirPath.replace(/^\.?\//, '').replace(/\/$/, '');
+        async function getGitHubRepoTree() {
+            if (githubTreeCache !== undefined) return githubTreeCache;
+            const gh = detectGitHubRepo();
+            if (!gh) {
+                githubTreeCache = null;
+                return null;
+            }
+            const branches = ['HEAD', 'main', 'master', 'gh-pages'];
+            for (const branch of branches) {
+                try {
+                    const res = await fetch(`https://api.github.com/repos/${gh.owner}/${gh.repo}/git/trees/${branch}?recursive=1`);
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && Array.isArray(data.tree)) {
+                            githubTreeCache = data.tree;
+                            return githubTreeCache;
+                        }
+                    }
+                } catch (e) {}
+            }
+            githubTreeCache = null;
+            return null;
+        }
+
+        async function listDirectoryFiles(dirPath, extensions = [], returnFullRelativePath = false) {
+            const cleanDir = dirPath.replace(/\\/g, '/').replace(/^\.?\//, '').replace(/\/$/, '');
             const foundFiles = new Set();
 
             const matchesExtension = (name) => {
@@ -637,27 +732,82 @@
                 return extensions.some(ext => lower.endsWith(ext.toLowerCase()));
             };
 
-            // 1. Tenta listagem de diretório HTML (servidores locais / autoindex)
+            const extractCleanFileName = (rawHref) => {
+                if (!rawHref) return null;
+                const normalized = decodeURIComponent(rawHref)
+                    .replace(/\\/g, '/')
+                    .split('?')[0]
+                    .split('#')[0]
+                    .trim();
+                if (!normalized || normalized === '.' || normalized === '..' || normalized === '../' || normalized.endsWith('/')) {
+                    return null;
+                }
+                const parts = normalized.split('/').filter(Boolean);
+                const last = parts.pop();
+                if (!last || last === '.' || last === '..') return null;
+                return last;
+            };
+
+            // 1. Tenta JSON de listagem de diretório (ex: VS Code Live Server / serve-index)
             try {
-                const res = await fetch(`./${cleanDir}/`);
-                if (res.ok) {
-                    const contentType = res.headers.get('content-type') || '';
-                    if (contentType.includes('text/html')) {
-                        const html = await res.text();
-                        const doc = new DOMParser().parseFromString(html, 'text/html');
-                        doc.querySelectorAll('a[href]').forEach(a => {
-                            const href = decodeURIComponent(a.getAttribute('href') || '');
-                            if (!href || href.startsWith('?') || href.startsWith('#') || href === '../' || href.endsWith('/')) return;
-                            const fileName = href.split('/').filter(Boolean).pop();
-                            if (fileName && matchesExtension(fileName)) {
-                                foundFiles.add(fileName);
-                            }
-                        });
+                const resJson = await fetch(`./${cleanDir}/`, { headers: { 'Accept': 'application/json' } });
+                if (resJson.ok) {
+                    const ct = resJson.headers.get('content-type') || '';
+                    if (ct.includes('application/json')) {
+                        const arr = await resJson.json();
+                        if (Array.isArray(arr)) {
+                            arr.forEach(item => {
+                                const rawName = typeof item === 'string' ? item : (item && item.name);
+                                const fileName = extractCleanFileName(rawName);
+                                if (fileName && matchesExtension(fileName)) {
+                                    foundFiles.add(returnFullRelativePath ? `./${cleanDir}/${fileName}` : fileName);
+                                }
+                            });
+                        }
                     }
                 }
             } catch (e) {}
 
-            // 2. Tenta API pública do GitHub se estiver no GitHub Pages
+            // 2. Tenta listagem de diretório HTML (servidores locais / autoindex)
+            if (foundFiles.size === 0) {
+                try {
+                    const res = await fetch(`./${cleanDir}/`, { headers: { 'Accept': 'text/html' } });
+                    if (res.ok) {
+                        const contentType = res.headers.get('content-type') || '';
+                        if (contentType.includes('text/html')) {
+                            const html = await res.text();
+                            const doc = new DOMParser().parseFromString(html, 'text/html');
+                            doc.querySelectorAll('a[href]').forEach(a => {
+                                const fileName = extractCleanFileName(a.getAttribute('href'));
+                                if (fileName && matchesExtension(fileName)) {
+                                    foundFiles.add(returnFullRelativePath ? `./${cleanDir}/${fileName}` : fileName);
+                                }
+                            });
+                        }
+                    }
+                } catch (e) {}
+            }
+
+            // 3. Tenta GitHub Tree API (case-insensitive, ideal para GitHub Pages)
+            if (foundFiles.size === 0) {
+                const tree = await getGitHubRepoTree();
+                if (Array.isArray(tree)) {
+                    const prefixLower = cleanDir.toLowerCase() + '/';
+                    tree.forEach(node => {
+                        if (node.type === 'blob' && typeof node.path === 'string') {
+                            const nodePathLower = node.path.toLowerCase();
+                            if (nodePathLower.startsWith(prefixLower)) {
+                                const remainder = node.path.slice(prefixLower.length);
+                                if (remainder && !remainder.includes('/') && matchesExtension(remainder)) {
+                                    foundFiles.add(returnFullRelativePath ? `./${node.path}` : remainder);
+                                }
+                            }
+                        }
+                    });
+                }
+            }
+
+            // 4. Fallback para API contents do GitHub
             if (foundFiles.size === 0) {
                 const gh = detectGitHubRepo();
                 if (gh) {
@@ -668,7 +818,7 @@
                             if (Array.isArray(items)) {
                                 items.forEach(item => {
                                     if (item.type === 'file' && item.name && matchesExtension(item.name)) {
-                                        foundFiles.add(item.name);
+                                        foundFiles.add(returnFullRelativePath ? `./${item.path || `${cleanDir}/${item.name}`}` : item.name);
                                     }
                                 });
                             }
@@ -677,7 +827,7 @@
                 }
             }
 
-            // 3. Tenta manifesto opcional index.json dentro da pasta
+            // 5. Tenta manifesto opcional index.json dentro da pasta
             if (foundFiles.size === 0) {
                 try {
                     const idxRes = await fetch(`./${cleanDir}/index.json`);
@@ -685,8 +835,9 @@
                         const list = await idxRes.json();
                         if (Array.isArray(list)) {
                             list.forEach(name => {
-                                if (typeof name === 'string' && matchesExtension(name)) {
-                                    foundFiles.add(name);
+                                const fileName = extractCleanFileName(typeof name === 'string' ? name : (name && name.file));
+                                if (fileName && matchesExtension(fileName)) {
+                                    foundFiles.add(returnFullRelativePath ? `./${cleanDir}/${fileName}` : fileName);
                                 }
                             });
                         }
@@ -890,7 +1041,8 @@
         let searchTimeout;
 
         function getMarkerType(m) {
-            return m.type || m.tipo || '';
+            const raw = m.type || m.tipo || m.gallery || '';
+            return String(raw).replace(/\.png$/i, '').trim();
         }
 
         function resolveMarkerIconUrl(m) {
@@ -1001,12 +1153,15 @@
         });
 
         // =========================================================================
-        // 6. SISTEMA DE GALERIA DOS MARCADORES (static/galeria/<type>/<imagem>.png)
+        // 6. SISTEMA DE GALERIA DOS MARCADORES (static/galeria/<type>/<exemplo>.png)
         // =========================================================================
         let currentGallery = [];
         let galleryIndex = 0;
         let galleryBaseFolder = '';
         const galleryOverlay = document.getElementById('gallery-overlay');
+        const markerMasonryOverlay = document.getElementById('marker-masonry-overlay');
+        const markerMasonryGrid = document.getElementById('marker-masonry-grid');
+        const markerMasonryTitle = document.getElementById('marker-masonry-title');
         const mainImg = document.getElementById('gallery-main-image');
         const galleryCaption = document.getElementById('gallery-caption');
         const prevPreview = document.getElementById('gallery-preview-prev');
@@ -1015,9 +1170,18 @@
         const btnNext = document.getElementById('btn-gallery-next');
 
         function resolveGalleryItemUrl(item, baseFolder) {
-            const raw = typeof item === 'object' ? (item.image || item.file || item.src || '') : item;
-            if (raw.startsWith('http') || raw.startsWith('./') || raw.startsWith('/')) return raw;
-            return `./${baseFolder}/${raw}`;
+            const raw = String(typeof item === 'object' ? (item.image || item.file || item.src || '') : item)
+                .replace(/\\/g, '/')
+                .trim();
+            if (!raw) return '';
+            if (raw.startsWith('http://') || raw.startsWith('https://') || raw.startsWith('./') || raw.startsWith('/')) {
+                return raw;
+            }
+            if (raw.startsWith('static/') || raw.startsWith('fitfc/')) {
+                return `./${raw}`;
+            }
+            const cleanBase = String(baseFolder || '').replace(/\\/g, '/').replace(/^\.?\//, '').replace(/\/$/, '');
+            return cleanBase ? `./${cleanBase}/${raw}` : `./${raw}`;
         }
 
         function resolveGalleryItemCaption(item) {
@@ -1025,35 +1189,76 @@
             return '';
         }
 
-        async function resolveMarkerTypeImages(typeName) {
-            const folderPath = `static/galeria/${typeName}`;
+        async function resolveActualGaleriaSubfolder(typeName) {
+            const cleanType = String(typeName || '').replace(/\.png$/i, '').trim();
+            if (!cleanType) return '';
 
-            // 1. Tenta listagem dinâmica da pasta static/galeria/<type>/ (HTML autoindex / GitHub API / index.json)
-            let files = await listDirectoryFiles(folderPath, ['.png']);
-            if (files.length > 0) {
-                return files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true })).map(f => `./${folderPath}/${f}`);
+            // Verifica se na árvore do GitHub ou no servidor existe pasta com case diferente
+            const tree = await getGitHubRepoTree();
+            if (Array.isArray(tree)) {
+                const targetPrefix = `static/galeria/${cleanType.toLowerCase()}/`;
+                const match = tree.find(n => typeof n.path === 'string' && n.path.toLowerCase().startsWith(targetPrefix));
+                if (match) {
+                    const parts = match.path.split('/');
+                    if (parts.length >= 3) return `static/galeria/${parts[2]}`;
+                }
             }
 
-            // 2. Verifica se existe mapeamento em data/prints.json para esse type
+            return `static/galeria/${cleanType}`;
+        }
+
+        async function resolveMarkerTypeImages(typeName, fallbackGalleryName = '') {
+            const folderPath = await resolveActualGaleriaSubfolder(typeName);
+            if (!folderPath) return [];
+
+            // 1. Tenta listagem dinâmica da pasta static/galeria/<type>/ (JSON, HTML autoindex, GitHub Tree/API, index.json)
+            let files = await listDirectoryFiles(folderPath, ['.png', '.jpg', '.jpeg', '.webp'], true);
+            if (files.length === 0 && fallbackGalleryName && fallbackGalleryName !== typeName) {
+                const altFolder = await resolveActualGaleriaSubfolder(fallbackGalleryName);
+                files = await listDirectoryFiles(altFolder, ['.png', '.jpg', '.jpeg', '.webp'], true);
+            }
+            if (files.length > 0) {
+                return files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+            }
+
+            // 2. Verifica se existe mapeamento em data/prints.json para esse type (case-insensitive)
             const printsData = await loadOptionalPrintsJson();
-            if (printsData && Array.isArray(printsData[typeName]) && printsData[typeName].length > 0) {
-                return printsData[typeName].map(item => {
-                    const file = typeof item === 'object' ? (item.image || item.file || item.src) : item;
-                    if (file.startsWith('./') || file.startsWith('http')) return item;
-                    const normalized = file.endsWith('.png') || file.includes('.') ? file : `${file}.png`;
-                    return typeof item === 'object' ? { ...item, image: `./${folderPath}/${normalized}` } : `./${folderPath}/${normalized}`;
-                });
+            if (printsData && typeof printsData === 'object') {
+                const matchingKey = Object.keys(printsData).find(k =>
+                    k.toLowerCase() === String(typeName).toLowerCase() ||
+                    (fallbackGalleryName && k.toLowerCase() === String(fallbackGalleryName).toLowerCase())
+                );
+                if (matchingKey && Array.isArray(printsData[matchingKey]) && printsData[matchingKey].length > 0) {
+                    return printsData[matchingKey].map(item => {
+                        const rawFile = String(typeof item === 'object' ? (item.image || item.file || item.src || '') : item)
+                            .replace(/\\/g, '/')
+                            .trim();
+                        if (rawFile.startsWith('./') || rawFile.startsWith('/') || rawFile.startsWith('http')) {
+                            return typeof item === 'object' ? { ...item, image: rawFile } : rawFile;
+                        }
+                        if (rawFile.startsWith('static/')) {
+                            const fixed = `./${rawFile}`;
+                            return typeof item === 'object' ? { ...item, image: fixed } : fixed;
+                        }
+                        const normalized = rawFile.includes('.') ? rawFile : `${rawFile}.png`;
+                        const fullUrl = `./${folderPath}/${normalized}`;
+                        return typeof item === 'object' ? { ...item, image: fullUrl } : fullUrl;
+                    });
+                }
             }
 
             // 3. Fallback de sondagem por nomes comuns de PNG dentro de static/galeria/<type>/
+            const cleanType = String(typeName).replace(/\.png$/i, '').trim();
             const candidates = [
-                `${typeName}.png`,
-                ...Array.from({ length: 15 }, (_, i) => `${i + 1}.png`),
-                ...Array.from({ length: 15 }, (_, i) => `${typeName}${i + 1}.png`),
-                ...Array.from({ length: 10 }, (_, i) => `${typeName}_${i + 1}.png`),
+                'exemplo.png', 'exemplo1.png', 'exemplo2.png',
+                `${cleanType}.png`,
+                ...Array.from({ length: 20 }, (_, i) => `${i + 1}.png`),
+                ...Array.from({ length: 15 }, (_, i) => `${cleanType}${i + 1}.png`),
+                ...Array.from({ length: 12 }, (_, i) => `${cleanType}_${i + 1}.png`),
                 ...Array.from({ length: 10 }, (_, i) => `0${i + 1}.png`),
                 ...Array.from({ length: 10 }, (_, i) => `print${i + 1}.png`),
-                ...Array.from({ length: 10 }, (_, i) => `foto${i + 1}.png`)
+                ...Array.from({ length: 10 }, (_, i) => `foto${i + 1}.png`),
+                ...Array.from({ length: 10 }, (_, i) => `img${i + 1}.png`)
             ];
             const uniqueCandidates = [...new Set(candidates)];
             const existing = [];
@@ -1067,31 +1272,69 @@
             return existing.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
         }
 
-        window.openGallery = async function(title, typeName) {
-            playSound('open');
-            if (!typeName) {
-                alert('Nenhum tipo de galeria associado a este marcador.');
-                return;
-            }
-
-            const images = await resolveMarkerTypeImages(typeName);
-            if (!images || images.length === 0) {
-                alert('Nenhuma imagem foi encontrada na galeria deste local.');
-                return;
-            }
-
-            currentGallery = images;
-            galleryIndex = 0;
-            galleryBaseFolder = `static/galeria/${typeName}`;
-            document.getElementById('gallery-title-text').innerText = title;
+        function openLightboxAt(items, index, title, baseFolder) {
+            currentGallery = items;
+            galleryIndex = index;
+            galleryBaseFolder = baseFolder || '';
+            document.getElementById('gallery-title-text').innerText = title || 'Galeria';
             updateGalleryUI();
             galleryOverlay.classList.add('active');
+        }
+
+        window.openGallery = async function(title, typeName, fallbackGallery = '') {
+            playSound('open');
+            if (!typeName && !fallbackGallery) {
+                return;
+            }
+
+            const images = await resolveMarkerTypeImages(typeName || fallbackGallery, fallbackGallery);
+            const baseFolder = `static/galeria/${typeName || fallbackGallery}`;
+
+            markerMasonryTitle.innerText = title || 'Galeria';
+            markerMasonryGrid.innerHTML = '';
+
+            if (!images || images.length === 0) {
+                markerMasonryGrid.removeAttribute('data-count');
+                markerMasonryGrid.innerHTML = `<div class="tributes-empty">Nenhuma imagem encontrada em ${baseFolder}.</div>`;
+                markerMasonryOverlay.classList.add('active');
+                return;
+            }
+
+            if (images.length <= 3) {
+                markerMasonryGrid.setAttribute('data-count', String(images.length));
+            } else {
+                markerMasonryGrid.removeAttribute('data-count');
+            }
+
+            images.forEach((item, idx) => {
+                const imgUrl = resolveGalleryItemUrl(item, baseFolder);
+                const card = document.createElement('div');
+                card.className = 'masonry-item';
+                card.innerHTML = `<img src="${imgUrl}" alt="${title || ''}" loading="lazy">`;
+                card.onclick = () => {
+                    playSound('click');
+                    openLightboxAt(images, idx, title, baseFolder);
+                };
+                markerMasonryGrid.appendChild(card);
+            });
+
+            markerMasonryOverlay.classList.add('active');
         };
+
+        document.getElementById('btn-close-marker-masonry').addEventListener('click', () => {
+            markerMasonryOverlay.classList.remove('active');
+            playSound('close');
+        });
+        markerMasonryOverlay.addEventListener('click', (e) => {
+            if (e.target === markerMasonryOverlay) {
+                markerMasonryOverlay.classList.remove('active');
+                playSound('close');
+            }
+        });
 
         function updateGalleryUI() {
             const total = currentGallery.length;
             document.getElementById('gallery-counter').innerText = `${galleryIndex + 1} / ${total}`;
-            mainImg.style.opacity = 0;
 
             const currentItem = currentGallery[galleryIndex];
             const primaryUrl = resolveGalleryItemUrl(currentItem, galleryBaseFolder);
@@ -1099,10 +1342,8 @@
             galleryCaption.innerText = captionText;
             galleryCaption.style.display = captionText ? 'block' : 'none';
 
-            setTimeout(() => {
-                mainImg.src = primaryUrl;
-                mainImg.onload = () => { mainImg.style.opacity = 1; };
-            }, 120);
+            mainImg.style.opacity = 1;
+            mainImg.src = primaryUrl;
 
             if (total > 1) {
                 btnPrev.style.visibility = 'visible';
@@ -1122,7 +1363,7 @@
         galleryOverlay.addEventListener('click', (e) => { if(e.target === galleryOverlay) closeGallery(); });
 
         // =========================================================================
-        // 7. SEÇÃO FITFC (Pasta fitfc/ com fitfc/fit1.png como banner)
+        // 7. SEÇÃO FITFC (Pasta fitfc/ com fitfc/fit1.png como banner único)
         // =========================================================================
         const tributesOverlay = document.getElementById('tributes-overlay');
         const tributesGrid = document.getElementById('tributes-grid');
@@ -1131,7 +1372,7 @@
 
         async function getFitfcImagesList() {
             const folderPath = 'fitfc';
-            let files = await listDirectoryFiles(folderPath, ['.png', '.jpg', '.jpeg', '.webp']);
+            let files = await listDirectoryFiles(folderPath, ['.png', '.jpg', '.jpeg', '.webp'], false);
 
             if (files.length === 0) {
                 const candidates = [
@@ -1147,11 +1388,13 @@
 
             files.sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
 
-            return files.map((file) => ({
-                file,
-                name: file.replace(/\.[^.]+$/, '').toUpperCase(),
-                image: `./${folderPath}/${file}`
-            }));
+            return files.map((file) => {
+                const cleanFile = String(file).replace(/\\/g, '/').split('/').pop();
+                return {
+                    file: cleanFile,
+                    image: `./${folderPath}/${cleanFile}`
+                };
+            });
         }
 
         async function openTributesModal() {
@@ -1162,46 +1405,38 @@
             const bannerUrl = './fitfc/fit1.png';
             const hasBanner = list.some(item => item.file.toLowerCase() === 'fit1.png') || await checkImageExists(bannerUrl);
 
+            // Remove o banner (fit1.png) da grade para não duplicar a imagem
+            const gridItems = list.filter(item => item.file.toLowerCase() !== 'fit1.png');
+
             if (hasBanner) {
                 fitfcBannerImg.src = bannerUrl;
                 fitfcBanner.style.display = 'block';
                 fitfcBanner.onclick = () => {
                     playSound('click');
-                    const galleryItems = list.length > 0 ? list : [{ name: 'FIT1', image: bannerUrl }];
-                    const bannerIdx = Math.max(0, galleryItems.findIndex(i => i.image.toLowerCase().endsWith('fit1.png')));
-                    currentGallery = galleryItems;
-                    galleryIndex = bannerIdx;
-                    galleryBaseFolder = 'fitfc';
-                    document.getElementById('gallery-title-text').innerText = 'FITFC';
-                    updateGalleryUI();
-                    galleryOverlay.classList.add('active');
+                    const allItems = [{ file: 'fit1.png', image: bannerUrl }, ...gridItems];
+                    openLightboxAt(allItems, 0, 'FITFC', 'fitfc');
                 };
             } else {
                 fitfcBanner.style.display = 'none';
             }
 
-            if (list.length === 0) {
+            if (gridItems.length === 0 && !hasBanner) {
+                tributesGrid.removeAttribute('data-count');
                 tributesGrid.innerHTML = `<div class="tributes-empty">Nenhuma imagem encontrada na pasta fitfc.</div>`;
             } else {
-                list.forEach((item, index) => {
+                if (gridItems.length > 0 && gridItems.length <= 3) {
+                    tributesGrid.setAttribute('data-count', String(gridItems.length));
+                } else {
+                    tributesGrid.removeAttribute('data-count');
+                }
+
+                gridItems.forEach((item, index) => {
                     const card = document.createElement('div');
-                    card.className = 'tribute-card';
-                    card.innerHTML = `
-                        <div class="tribute-card-img-wrap">
-                            <img src="${item.image}" alt="${item.name}">
-                        </div>
-                        <div class="tribute-card-body">
-                            <div class="tribute-card-title">${item.name}</div>
-                        </div>
-                    `;
+                    card.className = 'masonry-item';
+                    card.innerHTML = `<img src="${item.image}" alt="FITFC" loading="lazy">`;
                     card.onclick = () => {
                         playSound('click');
-                        currentGallery = list;
-                        galleryIndex = index;
-                        galleryBaseFolder = 'fitfc';
-                        document.getElementById('gallery-title-text').innerText = 'FITFC';
-                        updateGalleryUI();
-                        galleryOverlay.classList.add('active');
+                        openLightboxAt(gridItems, index, 'FITFC', 'fitfc');
                     };
                     tributesGrid.appendChild(card);
                 });
@@ -1731,12 +1966,14 @@
 
                 const latlng = mcToLatLng(m.x, m.z);
                 const mType = getMarkerType(m);
+                const mGallery = String(m.gallery || '').replace(/\.png$/i, '').trim();
                 const safeName = (m.name || 'Local').replace(/'/g, "\\'");
                 const safeType = mType.replace(/'/g, "\\'");
+                const safeGallery = mGallery.replace(/'/g, "\\'");
 
                 let popupHtml = `<div style="font-family:'Inter'; text-align:center;"><b>${m.name}</b><br><span style="color:#666; font-size:12px;">X: ${m.x}, Z: ${m.z}</span>`;
-                if (mType) {
-                    popupHtml += `<br><button class="btn-gallery" onclick="window.openGallery('${safeName}', '${safeType}')"><span class="material-symbols-outlined" style="font-size:16px;">photo_library</span> Ver Galeria</button>`;
+                if (mType || mGallery) {
+                    popupHtml += `<br><button class="btn-gallery" onclick="window.openGallery('${safeName}', '${safeType}', '${safeGallery}')"><span class="material-symbols-outlined" style="font-size:16px;">photo_library</span> Ver Galeria</button>`;
                 }
                 popupHtml += `</div>`;
 
