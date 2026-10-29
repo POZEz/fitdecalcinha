@@ -428,22 +428,72 @@
         }
 
         @media (max-width: 768px) {
-            #top-bar { padding: 0 10px; gap: 6px; }
-            .brand { font-size: 14px; gap: 6px; margin-right: 2px; }
+            #top-bar { 
+                padding: 0 8px; 
+                gap: 6px; 
+            }
             
-            .search-wrapper { margin: 0 4px; min-width: 0; padding: 0 8px; }
-            .search-icon { margin-right: 6px; font-size: 18px; }
-            #search-input { font-size: 13px; }
-            
-            .filter-wrapper { margin: 0; }
-            .filter-trigger .filter-text { display: none; }
-            .filter-trigger .material-symbols-outlined:last-child { display: none; }
-            .filter-trigger { padding: 8px; border-radius: 8px; gap: 0; justify-content: center; }
-            
-            .top-controls { gap: 0; }
-            .icon-btn { width: 36px; height: 36px; }
-            
-            #cursor-coords, .leaflet-control-zoom { display: none !important; } 
+            /* 1. Encolhe o logo: esconde o texto "AtlasFT MAP" e mantém apenas o ícone */
+            .brand { 
+                margin-right: 0; 
+                gap: 0; 
+                flex-shrink: 0; 
+            }
+            .brand .text-brand { 
+                display: none; 
+            }
+            .brand .material-symbols-outlined { 
+                font-size: 22px; 
+            }
+        
+            /* 2. Expande o wrapper da busca para cobrir toda a área livre */
+            .search-wrapper { 
+                flex: 1; 
+                max-width: none; 
+                margin: 0; 
+                padding: 0 8px; 
+                min-width: 0; 
+            }
+            .search-icon { 
+                margin-right: 6px; 
+                font-size: 18px; 
+            }
+            #search-input { 
+                font-size: 13px; 
+                width: 100%; 
+            }
+        
+            /* 3. Filtros e controles compactos */
+            .filter-wrapper { 
+                margin: 0; 
+                flex-shrink: 0; 
+            }
+            .filter-trigger .filter-text,
+            .filter-trigger .material-symbols-outlined:last-child { 
+                display: none; 
+            }
+            .filter-trigger { 
+                padding: 6px 8px; 
+                border-radius: 8px; 
+                gap: 0; 
+                justify-content: center; 
+            }
+        
+            .top-controls { 
+                gap: 2px; 
+                flex-shrink: 0; 
+            }
+            .icon-btn { 
+                width: 34px; 
+                height: 34px; 
+            }
+        
+            /* Elementos desnecessários em telas touch */
+            #cursor-coords, 
+            .leaflet-control-zoom { 
+                display: none !important; 
+            } 
+        
             .gallery-container { padding: 10px; }
             .gallery-nav img { display: none; } 
             .gallery-nav { min-width: 45px; padding: 15px 5px; }
@@ -454,10 +504,25 @@
             .masonry-item { margin-bottom: 8px; }
             .has-tooltip::after { display: none !important; }
         }
-
+        
         @media (max-width: 460px) {
-            .brand .text-brand { font-size: 13px; }
-            #ui-panel { right: 8px; width: calc(100vw - 16px); max-width: 284px; padding: 12px 14px; }
+            #top-bar {
+                padding: 0 6px;
+                gap: 4px;
+            }
+            .top-controls {
+                gap: 0;
+            }
+            .icon-btn {
+                width: 32px;
+                height: 32px;
+            }
+            #ui-panel { 
+                right: 8px; 
+                width: calc(100vw - 16px); 
+                max-width: 284px; 
+                padding: 12px 14px; 
+            }
         }
     </style>
 </head>
