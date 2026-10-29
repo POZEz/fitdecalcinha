@@ -340,8 +340,9 @@
         }
         .fitfc-banner img {
             width: 100%;
-            height: clamp(200px, 34vh, 380px);
-            object-fit: cover;
+            max-height: 480px;
+            height: auto;
+            object-fit: contain;
             object-position: center;
             display: block;
         }
